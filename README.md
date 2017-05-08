@@ -1,12 +1,15 @@
 # wii-gc-adapter
 
-Based off of wii-u-gc-adapter by @ToadKing, wii-gc-adapter is a
+Based off of wii-u-gc-adapter by ToadKing, wii-gc-adapter is a
 mod for Super Smash Bros. Brawl that should, when it's completed,
 allow you to use gamecube controllers, via the official
 Nintendo Wii u Gamecube Controller Adapter. Implementation
 is based on riivolution.
 
 Non-USA versions aren't _planned_, but you never know!
+
+Of course, note that it should be possible to port
+this to games besides SSBB with relative ease.
 
 ## Building and usage
 
@@ -35,7 +38,7 @@ None of this would be possible without:
 
 Everyone involved in devkitpro/devkitPPC/libogc
 (WinterMute, Team Twiizers, etc.),
-[wii-u-gc-adapter](https://github.com/ToadKing/wii-u-gc-adapter), by @ToadKing.
+[wii-u-gc-adapter](https://github.com/ToadKing/wii-u-gc-adapter), by ToadKing.
 [Wiibrew wiki](http://wiibrew.org), and all the contributors thereof,
 Dolphin Emulator, for it's invaluable debugging environment,
 Smashboards, for archiving random, VERY useful info about Brawl hacking,
