@@ -1,0 +1,5 @@
+/codeinject/*
+/build/
+/rii/
+/*.elf
+/*.bin

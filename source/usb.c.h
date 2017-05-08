@@ -29,6 +29,12 @@ distribution.
 -------------------------------------------------------------*/
 
 
+//Yo, as per the copyright notice above, I should
+//mention that this is a MODIFIED version of this code!
+//(DUN DUN DUUUUUNNNNN!)
+//  -Wilm
+
+
 /*  Note: There are 3 types of USB interfaces here, the early ones
  *  (V0: /dev/usb/oh0 and /dev/usb/oh1) and two later ones (V5: /dev/usb/ven
  *  and /dev/usb/hid) which are similar but have some small
