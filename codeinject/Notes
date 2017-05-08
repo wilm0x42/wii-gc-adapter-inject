@@ -1,0 +1,95 @@
+801e6cd8
+This is the address of the instruction that
+writes player 1 GC input to 804de4b0 --
+overwrite this with bl to custom input function
+(find other controller port details later)
+--Analog values are stored right next to buttons.
+
+Should be able to put code in RAM with riivolution.
+
+Possible code inject addresses: <--Nevermind
+ 80005bf4
+ 
+
+Function that loads string "/dev/sdio/slot0": 803fa280
+
+
+Other idea:
+ Might be able to convert to gecko code by:
+  find a way to use USB without libogc***
+  gcc -S
+  geckoDNET asm->C2
+
+
+***HOLY DANG there's code for /dev/usb/* in ssbb boot.dol (Debug stuff???)
+-- MABYE I CAN USE THAT! (File offset: 0x47a4dc) (8047E3E0 in RAM)
+    Function 0x803fa558 uses said string
+    Function 0x801d59ec (which calls 0x803fa558) is only called once
+    -- its called by 801d5c98, likely init code
+      ###803f8924 MIGHT be USB_Initialize();###No
+      --Turns out the USB code is for initing bluetooth.
+        Should'a seen it coming.
+        
+      BTW, USB_LOG will print if 0x805A0CD8 isn't 0
+
+
+
+=== Symbol Checklist ===
+Once these have all been located, USB_ReadIntrMsg and USB_WriteIntrMsg
+can steal the functions from libogc and put it in a local header
+
+[*] iosAlloc(s32 hid, s32 size)
+[*] IOS_Ioctlv(s32 fd,s32 ioctl,s32 cnt_in,s32 cnt_io,ioctlv *argv)
+[*] iosFree(s32 hid, void* ptr)
+
+
+Looks like -Os needs symbols for __save_gpr_(r)_x
+They're used in IUSB_OpenDeviceIds. Investigate.
+
+
+...It would seem, (with -O3,) the total code size is... 70704 bytes!
+
+Note to self: nop = 0x60000000
+
+Right, so the riivolution plan is BACK ON!
+Still need to find code injection area, but things are ready
+for when that happens.
+--Going to branch to _start from function USB_LOG
+  NTS: 0x2c000001 == cmpwi r0,1
+
+REAL total code size: 6112 bytes
+WOOOOAAAHAHH THIS FITS IN UNUSED VECTOR AREA 0x8001800
+:DDDDDDDDDDDDDdd
+ --Kind of a hollow victory 'cause GeckoOS uses this area for their
+   codehandler, so I'll inevitably have to move at some point for
+   Project M compatibility, but still...
+
+Okay, note: code will be executed iff the make-the-game-think-
+p1-has-a-gc-controller code works
+
+TFW you have to make a custom build of dolphin just to test your hax.
+Also, WHY DOLPHIN MMU NO ALLOW bl 0x80001800????
+Oh, because CHEATS have to be ENABLED. RIGHT, SURE.
+
+Okay, what the HECK. iosCreateHeap appearently takes TWO arguments,
+and the first seems to be a STACK POINTER???? what on EARTH.
+WHY is this NEVER referenced this way in libogc?????
+  --Wait, error strings in the dol reference a "heap name"?!?!?!?
+    --Nevermind this mess. I'm abandoning iosCreateHeap.
+  
+  
+Alright, nevermind iosCreateHeap. I'm not using that after all.
+But, iosAlloc is supposed to have THREE ARGUMENTS !?!?!?!?????? WHAT TO HECK
+ --It gets weirder. Besides r5 having to not be NULL, it seems that
+   EVERY call to iosAlloc within SSBB just sets r5 to 0x20, regardless of
+   heapId or buffer size.
+   --Come to think of it, it's fairly likely that this is the desired
+     alignment of the returned buffer. Aligning it to 32 bytes DOES seem
+     a little excessive, though... Idk.
+     
+So, SI_GetResponse is used for more than just the controller inputs,
+so there's no immediate possibility of successfully branching to
+adapter_thread from within there. However, I can't just REPLACE SI_GetResponse
+within PAD_READ because I dunno exactly what SI_GetReponse returns.
+(libogc is cryptic) But, if I can figure that out, this should be a
+fairly elegant solution.
