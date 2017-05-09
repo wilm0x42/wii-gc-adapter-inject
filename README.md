@@ -13,7 +13,7 @@ this to games besides SSBB with relative ease.
 
 ## Building and usage
 
-**This _only_ designed to build on Unix-like systems!**
+**This is _only_ designed to build on Unix-like systems!**
 Theoretically, it _might_ build on windows with cygwin,
 but I don't know, and really couldn't care less.
 
@@ -43,5 +43,5 @@ Everyone involved in devkitpro/devkitPPC/libogc
 Dolphin Emulator, for it's invaluable debugging environment,
 Smashboards, for archiving random, VERY useful info about Brawl hacking,
 The folks behind [Riivolution](http://rvlution.net),
-Gecko OS, and all of the brilliant hackers on geckocodes.org,
+Gecko OS, plus all of the brilliant hackers on geckocodes.org,
 and all the other's who I'm forgetting.

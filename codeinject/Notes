@@ -45,6 +45,7 @@ can steal the functions from libogc and put it in a local header
 
 Looks like -Os needs symbols for __save_gpr_(r)_x
 They're used in IUSB_OpenDeviceIds. Investigate.
+ --Nevermind, this is inexplicably no longer a problem.
 
 
 ...It would seem, (with -O3,) the total code size is... 70704 bytes!
