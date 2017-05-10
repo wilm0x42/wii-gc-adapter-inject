@@ -88,7 +88,6 @@ distribution.
 
 #define USB_MAX_DEVICES                         32
 
-extern volatile u32 errorCode;
 
 static s32 hIdBuf = -1;
 static s32* hId = &hIdBuf;//(s32*)0x8059ed80;
@@ -480,20 +479,16 @@ done:
 static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoint,u16 wLength,void *rpData,usbcallback cb,void *userdata)
 {
 	s32 ret = IPC_ENOMEM;
-	//struct _usb_msg msgBuf;
-	struct _usb_msg *msg;// = &msgBuf;
+	struct _usb_msg *msg;
 
 	if(((s32)rpData%32)!=0) return IPC_EINVAL;
 	if(wLength && !rpData) return IPC_EINVAL;
 	if(!wLength && rpData) return IPC_EINVAL;
 	
-	errorCode = 7;
 
-	//This is a problem apparently
 	msg = (struct _usb_msg*)iosAlloc(*hId,sizeof(struct _usb_msg));
 	if(msg==NULL) return IPC_ENOMEM;
 	
-	errorCode = 8;
 
 	memset(msg, 0, sizeof(struct _usb_msg));
 
@@ -504,8 +499,6 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 	//if (device_id>=0 && device_id<0x20) {
 		u8 *pEndP = NULL;
 		u16 *pLength = NULL;
-		//u8 pEndP[32] ATTRIBUTE_ALIGN(32);
-		//u16 pLength[32] ATTRIBUTE_ALIGN(32);
 
 		pEndP = (u8*)iosAlloc(*hId,32);
 		if(pEndP==NULL) goto done;
@@ -566,8 +559,6 @@ done:
 	}*/
 
 	if(msg!=NULL) iosFree(*hId,msg);
-	
-	errorCode = 9;
 
 	return ret;
 }

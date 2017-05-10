@@ -82,7 +82,6 @@ struct ports
 {
    bool connected;
    bool extra_power;
-   //int uinput;
    unsigned char type;
    uint16_t buttons;
    uint8_t axis[6];
@@ -101,12 +100,9 @@ struct adapter
 
 static struct adapter adapters;
 
-static struct adapter ata; //Adapter Thread adapter
+static struct adapter ata; //Adapter Thread Adapter
 
 volatile bool addedAdapter = false;
-
-volatile u32 errorCode = 0;
-volatile u32 usbError = 0;
 
 
 static unsigned char connected_type(unsigned char status)
@@ -255,7 +251,7 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
    }
 
    __asm__ volatile ("lis 14,0x2000\n\tmtcr 14\n\tlis 14,0");
-   return 1;// Apparently this means !error
+   return 1;// Apparently this means success
 }
 
 
@@ -288,7 +284,7 @@ static u32 add_adapter(usb_device_entry* dev)
    }
    a->fd = IOS_Open(devPath, 1|2);//Read | Write
    iosFree(*hId, devPath);
-   if (a->fd < 0) return 4;*/
+   if (a->fd < 0) return a->fd;*/
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    
@@ -305,11 +301,10 @@ static u32 add_adapter(usb_device_entry* dev)
    return 0;
 }
 
-//Keeps compiler from complaining about unused functions
+//Keeps GCC from complaining about "unused" functions
 static void dummy_use_functions()
 {
-	char dummy[2];
-   	adapter_thread(0, dummy);
+   	adapter_thread(0, NULL);
    	adapter_getType(0);
 }
 
@@ -325,10 +320,13 @@ void _start()
    //code execution on console (without USB gecko)
    *dbg1TeamMatch = 0x38600000;
    
+   //Initialize heap
    USB_Initialize();
    
 
-   while (!addedAdapter) // Enter main loop
+   //Until we've found and successfully
+   //initialized the adapter
+   while (!addedAdapter)
    {
 	    usb_device_entry devices[2];
 		u8 count = 0;
@@ -341,13 +339,16 @@ void _start()
 		{
 			if (devices[i].vid == 0x057e && devices[i].pid == 0x0337 && !addedAdapter)
 			{
-				if(add_adapter(&devices[i]) == 6)
+				if(!add_adapter(&devices[i]))
 					addedAdapter = true;
 			}
 		}
    }
    
+   //Keeps GCC from complaining about
+   //"unused" functions
    if (0) dummy_use_functions();
    
+   //To mark the end of our code here
    __asm__ volatile ("mr 4,4");
 }
