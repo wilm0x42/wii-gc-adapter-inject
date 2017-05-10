@@ -149,7 +149,7 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
    }
 
    input_event events[12+6+1];// 12 + 6 + 1 // buttons + axis + syn event
-   //memset(&events, 0, sizeof(events));
+   memset(&events, 0, sizeof(events));
    int n;
    for (n = 0; n < sizeof(events); n++)
    {
@@ -200,8 +200,6 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
    }
 }
 
-//We don't want these optimized out
-//#pragma GCC optimize 3
 static __attribute__((used)) u32 adapter_getType(u32 chan)
 {
 	//No adapter
@@ -217,26 +215,19 @@ static __attribute__((used)) u32 adapter_getType(u32 chan)
 	return 0;
 }
 
-
 static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
 {
-   __asm__ volatile ("nop\n\tnop\n\tnop\n\tnop");
-   
    if (!addedAdapter) return 0;
-	
-   //if (data == NULL) return NULL;
    
    //struct adapter *a = (struct adapter *)data;
    struct adapter *a = &ata;
    
-   //while (!a->quitting)
    if (!a->quitting)
    {
       unsigned char payload[37] ATTRIBUTE_ALIGN(32);
       int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
       
       if (usbret != 37 || payload[0] != 0x21)
-         //continue;
          return 0;//Apparently this is an error return value
       
       unsigned char *controller = &payload[1];
@@ -266,36 +257,52 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
    __asm__ volatile ("lis 14,0x2000\n\tmtcr 14\n\tlis 14,0");
    return 1;// Apparently this means !error
 }
-//#pragma GCC optimize 3
 
 
 static u32 add_adapter(usb_device_entry* dev)
 {
-   struct adapter *a = &ata;//(struct adapter *)calloc(1, sizeof(struct adapter));
+   //(struct adapter *)calloc(1, sizeof(struct adapter));
+   struct adapter *a = &ata;
    if (a == NULL)
    {
-      return 0xeeeeeeee;
+      return IPC_ENOMEM;
    }
    a->device = dev;
    
-   if (IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd) == 0)
+   //NOTE: We might want to use our own function, shown below.
+   //Reason being, IUSB_OpenDeviceIds uses the game's
+   //preexisting USB heap, and not our dedicated one.
+   a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
+   if (a->fd < 0)
    {
-      return 4;
+      return a->fd;
    }
-
-   unsigned char payload[1] ATTRIBUTE_ALIGN(32) = { 0x13 };
-   usbError = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
-   if (usbError < 0)
+   
+   /*char* devPath = (char*)iosAlloc(*hId, 32);
+   char pathStr[] = "/dev/usb/oh0/57e/337";
+   memset(devPath, 0, 32);
+   int n;
+   for (n = 0; n < sizeof(pathStr); n++)
    {
-		return usbError;
+   		devPath[n] = pathStr[n];
+   }
+   a->fd = IOS_Open(devPath, 1|2);//Read | Write
+   iosFree(*hId, devPath);
+   if (a->fd < 0) return 4;*/
+
+   unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
+   
+   int usbret = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
+   if (usbret < 0)
+   {
+		return usbret;
    }
 
    struct adapter *old_head = adapters.next;
    adapters.next = a;
    a->next = old_head;
    
-   return 6;
-   //LWP_CreateThread(&a->thread, adapter_thread, a, NULL, 0, 0);
+   return 0;
 }
 
 //Keeps compiler from complaining about unused functions
@@ -308,12 +315,17 @@ static void dummy_use_functions()
 
 void _start()
 {
+   //To mark beginning of our code here
    __asm__("mr 3,3");
-   errorCode = 1;
+   
+   //Disable usb log
+   *enableUsbLog = 1;
 
-   //So I know this actually executed (debug)
+   //Allow me to check for successful
+   //code execution on console (without USB gecko)
    *dbg1TeamMatch = 0x38600000;
-   //USB_Initialize();// unnecessary?
+   
+   USB_Initialize();
    
 
    while (!addedAdapter) // Enter main loop

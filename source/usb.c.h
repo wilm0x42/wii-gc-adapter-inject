@@ -90,7 +90,8 @@ distribution.
 
 extern volatile u32 errorCode;
 
-static s32* hId = (s32*)0x8059ed80;
+static s32 hIdBuf = -1;
+static s32* hId = &hIdBuf;//(s32*)0x8059ed80;
 static const char __oh0_path[] ATTRIBUTE_ALIGN(32) = "/dev/usb/oh0";
 //static const char __ven_path[] ATTRIBUTE_ALIGN(32) = "/dev/usb/ven";
 //static const char __hid_path[] ATTRIBUTE_ALIGN(32) = "/dev/usb/hid";
@@ -479,8 +480,8 @@ done:
 static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoint,u16 wLength,void *rpData,usbcallback cb,void *userdata)
 {
 	s32 ret = IPC_ENOMEM;
-	struct _usb_msg msgBuf;
-	struct _usb_msg *msg = &msgBuf;
+	//struct _usb_msg msgBuf;
+	struct _usb_msg *msg;// = &msgBuf;
 
 	if(((s32)rpData%32)!=0) return IPC_EINVAL;
 	if(wLength && !rpData) return IPC_EINVAL;
@@ -489,8 +490,8 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 	errorCode = 7;
 
 	//This is a problem apparently
-	//msg = (struct _usb_msg*)iosAlloc(*hId,sizeof(struct _usb_msg));
-	//if(msg==NULL) return IPC_ENOMEM;
+	msg = (struct _usb_msg*)iosAlloc(*hId,sizeof(struct _usb_msg));
+	if(msg==NULL) return IPC_ENOMEM;
 	
 	errorCode = 8;
 
@@ -501,17 +502,17 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 	msg->userdata = userdata;
 
 	//if (device_id>=0 && device_id<0x20) {
-		//u8 *pEndP = NULL;
-		//u16 *pLength = NULL;
-		u8 pEndP[32] ATTRIBUTE_ALIGN(32);
-		u16 pLength[32] ATTRIBUTE_ALIGN(32);
+		u8 *pEndP = NULL;
+		u16 *pLength = NULL;
+		//u8 pEndP[32] ATTRIBUTE_ALIGN(32);
+		//u16 pLength[32] ATTRIBUTE_ALIGN(32);
 
-		//pEndP = (u8*)iosAlloc(*hId,32);
-		//if(pEndP==NULL) goto done;
+		pEndP = (u8*)iosAlloc(*hId,32);
+		if(pEndP==NULL) goto done;
 		*pEndP = bEndpoint;
 
-		//pLength = (u16*)iosAlloc(*hId,32);
-		//if(pLength==NULL) goto done;
+		pLength = (u16*)iosAlloc(*hId,32);
+		if(pLength==NULL) goto done;
 		*pLength = wLength;
 
 		msg->vec[0].data = pEndP;
@@ -528,7 +529,7 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 		//else
 		//	return IOS_IoctlvAsync(device_id,ioctl,2,1,msg->vec,__usbv0_messageCB,msg);
 
-//done:
+done:
 		if(pEndP!=NULL) iosFree(*hId,pEndP);
 		if(pLength!=NULL) iosFree(*hId,pLength);
 
@@ -564,7 +565,7 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 		//	return IOS_IoctlvAsync(fd, ioctl, 2-endpoint_dir, endpoint_dir, msg->vec, __usbv5_messageCB, msg);
 	}*/
 
-	//if(msg!=NULL) iosFree(*hId,msg);
+	if(msg!=NULL) iosFree(*hId,msg);
 	
 	errorCode = 9;
 
@@ -596,14 +597,12 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 	return (buffer - ptr);
 }*/
 
-/*s32 USB_Initialize()
+s32 USB_Initialize()
 {
-    //This is broken, because SSBB seems to have different instances
-    //of iosCreateHeap for each point where it's called. WHAT TO HECK
-	if(*hId==-1) *hId = iosCreateHeap(, USB_HEAPSIZE);
+	if(*hId==-1) *hId = iosCreateHeap(IPC_GetBufferLo(), USB_HEAPSIZE);
 	if(*hId<0) return IPC_ENOMEM;
 
-	if (ven_host==NULL) {
+	/*if (ven_host==NULL) {
 		s32 ven_fd = IOS_Open(__ven_path, IPC_OPEN_NONE);
 		if (ven_fd>=0) {
 			ven_host = (struct _usbv5_host*)iosAlloc(*hId, sizeof(*ven_host));
@@ -654,14 +653,14 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 
 			iosFree(*hId, hid_ver);
 		}
-	}
+	}*/
 
 	return IPC_OK;
 
-mem_error:
-	USB_Deinitialize();
-	return IPC_ENOMEM;
-}*/
+//mem_error:
+	//USB_Deinitialize();
+	//return IPC_ENOMEM;
+}
 
 /*s32 USB_Deinitialize()
 {
@@ -692,6 +691,7 @@ mem_error:
 	char *devicepath = NULL;
 	*fd = -1;
 
+
 	if (device_id && device_id!=USB_OH1_DEVICE_ID) {
 		int i;
 
@@ -719,18 +719,18 @@ mem_error:
 		}
 	}
 
-	devicepath = iosAlloc(hId,USB_MAXPATH);
+	devicepath = iosAlloc(*hId,USB_MAXPATH);
 	if(devicepath==NULL) return IPC_ENOMEM;
 
-	if (device_id==USB_OH1_DEVICE_ID)
-		snprintf(devicepath,USB_MAXPATH,"/dev/usb/oh1/%x/%x",vid,pid);
-	else
+	//if (device_id==USB_OH1_DEVICE_ID)
+		//snprintf(devicepath,USB_MAXPATH,"/dev/usb/oh1/%x/%x",vid,pid);
+	//else
 		snprintf(devicepath,USB_MAXPATH,"/dev/usb/oh0/%x/%x",vid,pid);
 
 	*fd = IOS_Open(devicepath,0);
 	if(*fd<0) ret = *fd;
 
-	if (devicepath!=NULL) iosFree(hId,devicepath);
+	if (devicepath!=NULL) iosFree(*hId,devicepath);
 	return ret;
 }
 

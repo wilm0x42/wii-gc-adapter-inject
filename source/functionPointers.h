@@ -14,6 +14,8 @@ u16* p1BtnAddr = (u16*)0x804de4b0;
 //(use for debugging)
 u32* dbg1TeamMatch = (u32*)0x8068D534;
 
+u8* enableUsbLog = (u8*)0x805A0CD8;
+
 
 void* memset(void *__s, int __c, unsigned int num)
 {
@@ -31,8 +33,9 @@ s32 (*IOS_Ioctlv)(s32 fd, s32 ioctl, s32 cnt_in, s32 cnt_io, ioctlv *argv) = (vo
 void* (*_iosAlloc)(s32 hid,s32 size,u32 always0x20WTH) = (void*)0x80213598;
 #define iosAlloc(x,y) _iosAlloc(x,y,0x20)
 void (*iosFree)(s32 hid,void *ptr) = (void*)0x802137a8;
-//iosCreateHeap: Not sure of these parameters at all
-//s32 (*iosCreateHeap)(s32 bufferLo, s32 size) = (void*)0x80213468;
+void* (*IPC_GetBufferLo)() = (void*)0x80211ae8;
+//Not sure of arg0
+s32 (*iosCreateHeap)(void* bufferLo, s32 size) = (void*)0x80213468;
 s32 (*IOS_Open)(const char *filepath,u32 mode) = (void*)0x802123a8;
 s32 (*IOS_Close)(s32 fd) = (void*)0x80212588;
 

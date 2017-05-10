@@ -94,3 +94,8 @@ adapter_thread from within there. However, I can't just REPLACE SI_GetResponse
 within PAD_READ because I dunno exactly what SI_GetReponse returns.
 (libogc is cryptic) But, if I can figure that out, this should be a
 fairly elegant solution.
+
+Seems 0x80212050 (__ipc_syncrequest), as called in
+USB_WriteIntrMsg, is returning IPC_EINVAL
+ --Probably a faulty IoCtlv
+

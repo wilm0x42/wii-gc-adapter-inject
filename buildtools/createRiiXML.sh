@@ -48,17 +48,17 @@ adapter_getType_bl=$(../buildtools/generateBl 0x8021619c 0x$adapter_getType_addr
       <memory offset="0x8021619c" value="0x$adapter_getType_bl" />
       <!-- Branch to adapter_thread from PADRead -->
       <memory offset="$branchaddress" value="0x$adapter_thread_bl" />
-      
-      
-      <!-- cmpwi r0, 1 -->
+
+      <!-- nop questionable function call (Might not be needed) -->
+      <memory offset="0x802288a0" value="0x60000000" />
+      <!-- Make USB_LOG run -->
       <memory offset="0x80228874" value="0x2c000001" />
       <!-- Branch to _start from within USB_LOG -->
-      <memory offset="0x802288bc" value="0x$start_bl" />
-      <!-- li r0, 1 -->
-      <memory offset="0x802288c0" value="0x38000001" />
-      <!-- stb r0, -0x3748, (r13) (Disable USB_LOG) -->
-      <memory offset="0x802288c4" value="0x980dc8b8" />
+      <memory offset="0x802288c4" value="0x$start_bl" />
       
+      <!-- NOTE: These two patches should no longer be necesary, -->
+      <!-- but they'll stay here until I can confirm that -->
+      <!-- everything works without them. -->
       <!-- nop the first call to USB_LOG (USB heap not initialized at this point) -->
       <memory offset="0x80228a00" value="0x60000000" />
       <!-- Increase USB heap size 0x4000 -> 0x6000 -->
