@@ -98,4 +98,8 @@ fairly elegant solution.
 Seems 0x80212050 (__ipc_syncrequest), as called in
 USB_WriteIntrMsg, is returning IPC_EINVAL
  --Probably a faulty IoCtlv
-
+   --It seems it was just dolphin freaking
+     needing root privliges to use USB (!?!?!)
+     --Alright, now it seems to just be failing to transfer data
+       to the adapter altogether (IOS_Ioctlv returning -1)
+     

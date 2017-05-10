@@ -11,12 +11,12 @@ echo "Place code in memory at $codeaddress."
 echo "Overwrite Branch Address ($branchaddress) with"
 echo "code that will branch to adapter_thread ($adapter_thread_addr)"
 echo "Initially branch to code at $start_addr from"
-echo "0x802288bc (USB_LOG), with one-time exec code."
+echo "0x802288c4 (USB_LOG), with one-time exec code."
 echo "Overwrite PADRead's call to SI_GetType (8021619c)"
 echo "with a call to adapter_getType ($adapter_getType_addr)"
 
 #Branch to _start from within USB_LOG
-start_bl=$(../buildtools/generateBl 0x802288bc $start_addr)
+start_bl=$(../buildtools/generateBl 0x802288c4 $start_addr)
 
 #Branch to adapter_thread from PADRead
 adapter_thread_bl=$(../buildtools/generateBl $branchaddress 0x$adapter_thread_addr)
