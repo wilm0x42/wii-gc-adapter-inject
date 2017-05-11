@@ -102,4 +102,8 @@ USB_WriteIntrMsg, is returning IPC_EINVAL
      needing root privliges to use USB (!?!?!)
      --Alright, now it seems to just be failing to transfer data
        to the adapter altogether (IOS_Ioctlv returning -1)
-     
+       --The problem was incorrect endpoints. Fixed.
+       
+IT WORKS!... Almost!
+I've got it ACTUALLY writing data in memory of button inputs!!!
+...Just in the wrong format. Here we go!

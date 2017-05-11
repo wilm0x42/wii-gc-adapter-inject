@@ -49,25 +49,6 @@ typedef s32 __s32;
 
 #define MAX_FF_EVENTS 4
 
-const int BUTTON_OFFSET_VALUES[16] = {
-   BTN_START,
-   BTN_TR2,
-   BTN_TR,
-   BTN_TL,
-   -1,
-   -1,
-   -1,
-   -1,
-   BTN_SOUTH,
-   BTN_WEST,
-   BTN_EAST,
-   BTN_NORTH,
-   BTN_DPAD_LEFT,
-   BTN_DPAD_RIGHT,
-   BTN_DPAD_DOWN,
-   BTN_DPAD_UP,
-};
-
 const int AXIS_OFFSET_VALUES[6] = {
    ABS_X,
    ABS_Y,
@@ -76,7 +57,6 @@ const int AXIS_OFFSET_VALUES[6] = {
    ABS_Z,
    ABS_RZ
 };
-
 
 struct ports
 {
@@ -158,27 +138,59 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
    int e_count = 0;
 
    uint16_t btns = (uint16_t) payload[1] << 8 | (uint16_t) payload[2];
-   
+   uint16_t outBtns = 0;
 
    int j;
    for (j = 0; j < 16; j++)
    {
-      if (BUTTON_OFFSET_VALUES[j] == -1)
-         continue;
-
       uint16_t mask = (1 << j);
       uint16_t pressed = btns & mask;
 
-      if ((port->buttons & mask) != pressed)
+      if (pressed)
       {
-         events[e_count].type = EV_KEY;
-         events[e_count].code = BUTTON_OFFSET_VALUES[j];
-         events[e_count].value = (pressed == 0) ? 0 : 1;
-         e_count++;
-         port->buttons &= ~mask;
-         port->buttons |= pressed;
+      	switch (j)
+      	{
+      		case 13://BTN_DPAD_LEFT:
+      			outBtns |= 0x0001;
+      			break;
+      		case 12://BTN_DPAD_RIGHT:
+      			outBtns |= 0x0002;
+      			break;
+      		case 14://BTN_DPAD_DOWN:
+      			outBtns |= 0x0004;
+      			break;
+      		case 15://BTN_DPAD_UP:
+      			outBtns |= 0x0008;
+      			break;
+      		case 1://BTN_TR2:
+      			outBtns |= 0x0010;
+      			break;
+      		case 2://BTN_TR:
+      			outBtns |= 0x0020;
+      			break;
+      		case 3://BTN_TL:
+      			outBtns |= 0x0040;
+      			break;
+      		case 8://BTN_SOUTH:
+      			outBtns |= 0x0100;
+      			break;
+      		case 9://BTN_WEST:
+      			outBtns |= 0x0200;
+      			break;
+      		case 10://BTN_EAST:
+      			outBtns |= 0x0400;
+      			break;
+      		case 11://BTN_NORTH:
+      			outBtns |= 0x0800;
+      			break;
+      		case 0://BTN_START:
+      			outBtns |= 0x1000;
+      			break;
+      	}
       }
    }
+   
+   *p1BtnAddr = outBtns;
 
    for (j = 0; j < 6; j++)
    {
@@ -224,6 +236,7 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
    {
       unsigned char payload[37] ATTRIBUTE_ALIGN(32);
       int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
+      errorUsb = usbret;
       
       if (usbret != 37 || payload[0] != 0x21)
          return 0;//Apparently this is an error return value
@@ -243,7 +256,7 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
       }
       
       //Write button state
-      *p1BtnAddr = a->controllers[0].buttons;
+      //*p1BtnAddr = a->controllers[0].buttons;
 
       /*if (memcmp(rumble, a->rumble, sizeof(rumble)) != 0)
       {
