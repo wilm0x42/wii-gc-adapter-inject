@@ -88,8 +88,11 @@
 #define USB_FEATURE_ENDPOINT_HALT		0
 
 #define USB_ENDPOINT_INTERRUPT			0x03
-#define USB_ENDPOINT_IN					0x80
-#define USB_ENDPOINT_OUT				0x00
+
+//libogc's default endpoints (0x80 IN, 0x00 OUT) don't seem to match the ones 
+//I found via lscpu, so I'm using those instead (0x81 IN, 0x02 OUT)
+#define USB_ENDPOINT_IN					0x81//was 0x80
+#define USB_ENDPOINT_OUT				0x02//was 0x00
 
 #define USB_OH0_DEVICE_ID				0x00000000				// for completion
 #define USB_OH1_DEVICE_ID				0x00200000

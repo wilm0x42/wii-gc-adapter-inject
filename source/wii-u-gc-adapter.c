@@ -104,6 +104,8 @@ static struct adapter ata; //Adapter Thread Adapter
 
 volatile bool addedAdapter = false;
 
+volatile int errorUsb = 0;
+
 
 static unsigned char connected_type(unsigned char status)
 {
@@ -289,6 +291,7 @@ static u32 add_adapter(usb_device_entry* dev)
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    
    int usbret = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
+   errorUsb = usbret;
    if (usbret < 0)
    {
 		return usbret;
