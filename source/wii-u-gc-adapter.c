@@ -84,8 +84,6 @@ static struct adapter ata; //Adapter Thread Adapter
 
 volatile bool addedAdapter = false;
 
-volatile int errorUsb = 0;
-
 
 static unsigned char connected_type(unsigned char status)
 {
@@ -201,14 +199,7 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
       //if (AXIS_OFFSET_VALUES[j] == ABS_Y || AXIS_OFFSET_VALUES[j] == ABS_RY)
          //value ^= 0xFF; // flip from 0 - 255 to 255 - 0
 
-      if (port->axis[j] != value)
-      {
-         /*events[e_count].type = EV_ABS;
-         events[e_count].code = AXIS_OFFSET_VALUES[j];
-         events[e_count].value = value;
-         e_count++;*/
-         port->axis[j] = value;
-      }
+      port->axis[j] = value;
    }
 }
 
@@ -238,8 +229,6 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
    {
       unsigned char payload[37] ATTRIBUTE_ALIGN(32);
       int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
-      errorUsb = usbret;
-      
       if (usbret != 37 || payload[0] != 0x21)
          return 0;//Apparently this is an error return value
       
@@ -248,6 +237,7 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
       //unsigned char rumble[5] ATTRIBUTE_ALIGN(32) = {0x11, 0, 0, 0, 0};
       //struct timespec current_time ATTRIBUTE_ALIGN(32) = {0};
       //clock_gettime(&current_time);
+      
       int i;
       for (i = 0; i < 4; i++, controller += 9)
       {
@@ -283,10 +273,10 @@ static u32 add_adapter(usb_device_entry* dev)
 {
    //(struct adapter *)calloc(1, sizeof(struct adapter));
    struct adapter *a = &ata;
-   if (a == NULL)
+   /*if (a == NULL)
    {
       return IPC_ENOMEM;
-   }
+   }*/
    a->device = dev;
    
    //NOTE: We might want to use our own function, shown below.
@@ -313,11 +303,8 @@ static u32 add_adapter(usb_device_entry* dev)
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    
    int usbret = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
-   errorUsb = usbret;
    if (usbret < 0)
-   {
 		return usbret;
-   }
 
    struct adapter *old_head = adapters.next;
    adapters.next = a;
