@@ -126,7 +126,7 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
       port->type = type;
    }
 
-   input_event events[12+6+1];// 12 + 6 + 1 // buttons + axis + syn event
+   /*input_event events[12+6+1];// 12 + 6 + 1 // buttons + axis + syn event
    memset(&events, 0, sizeof(events));
    int n;
    for (n = 0; n < sizeof(events); n++)
@@ -135,7 +135,7 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
 		ptr += n;
 		*ptr = 0;
    }
-   int e_count = 0;
+   int e_count = 0;*/
 
    uint16_t btns = (uint16_t) payload[1] << 8 | (uint16_t) payload[2];
    uint16_t outBtns = 0;
@@ -190,21 +190,23 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
       }
    }
    
+   //Write button state
    *p1BtnAddr = outBtns;
+   port->buttons = outBtns;
 
    for (j = 0; j < 6; j++)
    {
       unsigned char value = payload[j+3];
 
-      if (AXIS_OFFSET_VALUES[j] == ABS_Y || AXIS_OFFSET_VALUES[j] == ABS_RY)
-         value ^= 0xFF; // flip from 0 - 255 to 255 - 0
+      //if (AXIS_OFFSET_VALUES[j] == ABS_Y || AXIS_OFFSET_VALUES[j] == ABS_RY)
+         //value ^= 0xFF; // flip from 0 - 255 to 255 - 0
 
       if (port->axis[j] != value)
       {
-         events[e_count].type = EV_ABS;
+         /*events[e_count].type = EV_ABS;
          events[e_count].code = AXIS_OFFSET_VALUES[j];
          events[e_count].value = value;
-         e_count++;
+         e_count++;*/
          port->axis[j] = value;
       }
    }
@@ -255,8 +257,14 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
          
       }
       
-      //Write button state
-      //*p1BtnAddr = a->controllers[0].buttons;
+      memset(buf, 0, 8);
+      *((uint16_t*)buf) = a->controllers[0].buttons;
+      ((s8*)buf)[4] = a->controllers[0].axis[2];//RX
+      ((s8*)buf)[5] = a->controllers[0].axis[3];//RY
+      ((s8*)buf)[6] = a->controllers[0].axis[0];//LX
+      ((s8*)buf)[7] = a->controllers[0].axis[1];//LY
+      ((s8*)buf)[2] = a->controllers[0].axis[5];//TR
+      ((s8*)buf)[3] = a->controllers[0].axis[4];//TL
 
       /*if (memcmp(rumble, a->rumble, sizeof(rumble)) != 0)
       {
@@ -265,6 +273,7 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
       }*/
    }
 
+   //I don't remember why, but apparently we need CR to be 0x20000000
    __asm__ volatile ("lis 14,0x2000\n\tmtcr 14\n\tlis 14,0");
    return 1;// Apparently this means success
 }

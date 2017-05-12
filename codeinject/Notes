@@ -107,3 +107,5 @@ USB_WriteIntrMsg, is returning IPC_EINVAL
 IT WORKS!... Almost!
 I've got it ACTUALLY writing data in memory of button inputs!!!
 ...Just in the wrong format. Here we go!
+ --802161b4 is the call to SI_GetResponse
+   8021658c is SPEC2_MakeStatus
