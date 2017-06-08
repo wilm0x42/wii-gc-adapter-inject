@@ -218,9 +218,38 @@ static __attribute__((used)) u32 adapter_getType(u32 chan)
 	return 0;
 }
 
-static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
+static __attribute__((used)) u32 adapter_getStatus(u32 chan)
 {
-   if (!addedAdapter) return 0;
+	if (!addedAdapter)
+		return 0x08;//SI_ERROR_NO_RESPONSE
+	
+	if (!ata.controllers[chan].connected)
+		return 0x08;//SI_ERROR_NO_RESPONSE
+	
+	return 0;
+}
+
+static __attribute__((used)) int adapter_getResponse(u32 chan, void* buf)
+{
+	struct adapter *a = &ata;
+	if (!a) return 0;//False for "Failure"
+
+	memset(buf, 0, 8);
+    *((uint16_t*)buf) = a->controllers[0].buttons;
+    ((s8*)buf)[4] = a->controllers[0].axis[2];//RX
+    ((s8*)buf)[5] = a->controllers[0].axis[3];//RY
+    ((s8*)buf)[6] = a->controllers[0].axis[0];//LX
+    ((s8*)buf)[7] = a->controllers[0].axis[1];//LY
+    ((s8*)buf)[2] = a->controllers[0].axis[5];//TR
+    ((s8*)buf)[3] = a->controllers[0].axis[4];//TL
+    
+    return 1;//True for "Tremendous Successs"
+}
+
+//AKA adapter_isChanBusy(u32 chan)
+static __attribute__((used)) int adapter_thread(u32 chan)
+{
+   if (!addedAdapter) return 1;//"Channel is busy. Try again later."
    
    //struct adapter *a = (struct adapter *)data;
    struct adapter *a = &ata;
@@ -246,15 +275,6 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
          //rumble[i+1] = 0;
          
       }
-      
-      memset(buf, 0, 8);
-      *((uint16_t*)buf) = a->controllers[0].buttons;
-      ((s8*)buf)[4] = a->controllers[0].axis[2];//RX
-      ((s8*)buf)[5] = a->controllers[0].axis[3];//RY
-      ((s8*)buf)[6] = a->controllers[0].axis[0];//LX
-      ((s8*)buf)[7] = a->controllers[0].axis[1];//LY
-      ((s8*)buf)[2] = a->controllers[0].axis[5];//TR
-      ((s8*)buf)[3] = a->controllers[0].axis[4];//TL
 
       /*if (memcmp(rumble, a->rumble, sizeof(rumble)) != 0)
       {
@@ -262,10 +282,10 @@ static __attribute__((used)) int adapter_thread(s32 chan, void* buf)
          USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(a->rumble), a->rumble);
       }*/
    }
-
-   //I don't remember why, but apparently we need CR to be 0x20000000
-   __asm__ volatile ("lis 14,0x2000\n\tmtcr 14\n\tlis 14,0");
-   return 1;// Apparently this means success
+   
+   if (!a->controllers[chan].connected)
+   		return 1;
+   return 0;//"No, this channel isn't busy at this time."
 }
 
 
@@ -316,7 +336,7 @@ static u32 add_adapter(usb_device_entry* dev)
 //Keeps GCC from complaining about "unused" functions
 static void dummy_use_functions()
 {
-   	adapter_thread(0, NULL);
+   	adapter_thread(0);
    	adapter_getType(0);
 }
 
