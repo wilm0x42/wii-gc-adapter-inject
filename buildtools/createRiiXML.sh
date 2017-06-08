@@ -69,13 +69,9 @@ adapter_getResponse_bl=$(../buildtools/generateBl 0x802161b4 0x$adapter_getRespo
       <!-- Branch to _start from within USB_LOG -->
       <memory offset="0x802288c4" value="0x$start_bl" />
       
-      <!-- NOTE: These two patches should no longer be necesary, -->
-      <!-- but they'll stay here until I can confirm that -->
-      <!-- everything works without them. -->
-      <!-- nop the first call to USB_LOG (USB heap not initialized at this point) -->
+      <!-- TODO: See if this can be done in a more elegant way -->
+      <!-- nop the first call to USB_LOG (Original USB heap not initialized at this point) -->
       <memory offset="0x80228a00" value="0x60000000" />
-      <!-- Increase USB heap size 0x4000 -> 0x6000 -->
-      <memory offset="0x80228a34" value="0x38806000" />
       
 
       <!-- Spoof gamecube controller port 1 (Thx spunit262) -->
