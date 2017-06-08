@@ -84,6 +84,8 @@ static struct adapter ata; //Adapter Thread Adapter
 
 volatile bool addedAdapter = false;
 
+volatile u32 adapterThreadError = 0xff;
+
 
 static unsigned char connected_type(unsigned char status)
 {
@@ -248,7 +250,13 @@ static __attribute__((used)) int adapter_getResponse(u32 chan, void* buf)
 //AKA adapter_isChanBusy(u32 chan)
 static __attribute__((used)) int adapter_thread(u32 chan)
 {
-   if (!addedAdapter) return 1;//"Channel is busy. Try again later."
+   adapterThreadError = 0;
+
+   if (!addedAdapter)
+   {
+   		adapterThreadError |= 1;
+   		return 1;//"Channel is busy. Try again later."
+   }
    
    //struct adapter *a = (struct adapter *)data;
    struct adapter *a = &ata;
@@ -258,7 +266,10 @@ static __attribute__((used)) int adapter_thread(u32 chan)
       unsigned char payload[37] ATTRIBUTE_ALIGN(32);
       int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
       if (usbret != 37 || payload[0] != 0x21)
-         return 0;//Apparently this is an error return value
+      {
+      	 adapterThreadError |= 2;
+         return 1;//"Nope, this channel is busy"
+      }
       
       unsigned char *controller = &payload[1];
 
@@ -272,7 +283,6 @@ static __attribute__((used)) int adapter_thread(u32 chan)
          handle_payload(i, &a->controllers[i], controller);
          
          //rumble[i+1] = 0;
-         
       }
 
       /*if (memcmp(rumble, a->rumble, sizeof(rumble)) != 0)
