@@ -18,6 +18,8 @@ echo "Overwrite PADRead's call to SI_GetType (8021619c)"
 echo "with a call to adapter_getType ($adapter_getType_addr)."
 echo "Overwrite PADRead's call to SI_GetStatus (802160c0)"
 echo "with a call to adapter_getStatus ($adapter_getStatus_addr)."
+echo "Overwrite PADRead's call to SI_GetResponse (802161b4)"
+echo "with a call to adapter_getResponse ($adapter_getResponse_addr)."
 
 #Branch to _start from within USB_LOG
 start_bl=$(../buildtools/generateBl 0x802288c4 $start_addr)

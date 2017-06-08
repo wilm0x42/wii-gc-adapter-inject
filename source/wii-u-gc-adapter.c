@@ -189,7 +189,6 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
    }
    
    //Write button state
-   *p1BtnAddr = outBtns;
    port->buttons = outBtns;
 
    for (j = 0; j < 6; j++)
