@@ -6,6 +6,7 @@ branchaddress=$2
 adapter_thread_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep adapter_thread | cut -c9-16)
 adapter_getType_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep adapter_getType | cut -c9-16)
 adapter_getStatus_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep adapter_getStatus | cut -c9-16)
+adapter_getResponse_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep adapter_getResponse | cut -c9-16)
 start_addr=$(powerpc-eabi-readelf -h ./wii-gc-adapter.g.elf | grep "Entry point address:" | cut -c38- | tr -d '\n\r')
 
 echo "Place code in memory at $codeaddress."
@@ -24,8 +25,10 @@ start_bl=$(../buildtools/generateBl 0x802288c4 $start_addr)
 #Branch to adapter_thread from PADRead
 adapter_thread_bl=$(../buildtools/generateBl $branchaddress 0x$adapter_thread_addr)
 
+#Function overwrites
 adapter_getType_bl=$(../buildtools/generateBl 0x8021619c 0x$adapter_getType_addr)
 adapter_getStatus_bl=$(../buildtools/generateBl 0x802160c0 0x$adapter_getStatus_addr)
+adapter_getResponse_bl=$(../buildtools/generateBl 0x802161b4 0x$adapter_getResponse_addr)
 
 
 (cat > wii-gc-adapter.xml) << _EOF_
@@ -52,7 +55,9 @@ adapter_getStatus_bl=$(../buildtools/generateBl 0x802160c0 0x$adapter_getStatus_
       <memory offset="0x8021619c" value="0x$adapter_getType_bl" />
       <!-- Subsittute call to SI_GetStatus wtih adapter_getStatus -->
       <memory offset="0x802160c0" value="0x$adapter_getStatus_bl" />
-      <!-- Branch to adapter_thread from PADRead -->
+      <!-- Substitute call to SI_GetResponse with adapter_getResponse-->
+      <memory offset="0x802161b4" value="0x$adapter_getResponse_bl" />
+      <!-- Branch to adapter_thread from PADRead (replace SI_IsChanBusy) -->
       <memory offset="$branchaddress" value="0x$adapter_thread_bl" />
 
       <!-- nop questionable function call (Might not be needed) -->

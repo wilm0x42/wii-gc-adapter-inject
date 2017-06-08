@@ -284,7 +284,8 @@ static __attribute__((used)) int adapter_thread(u32 chan)
    }
    
    if (!a->controllers[chan].connected)
-   		return 1;
+   		return 1;//"Sorry, this channel is busy right now."
+   		
    return 0;//"No, this channel isn't busy at this time."
 }
 
