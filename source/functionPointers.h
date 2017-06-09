@@ -7,13 +7,6 @@
 #include <ogc/ipc.h>
 
 
-//The address of player one's button inputs
-u16* p1BtnAddr = (u16*)0x804de4b0;
-
-//Will enable 1-team matches when set to 0x38600000
-//(use for console debugging)
-u32* dbg1TeamMatch = (u32*)0x8068D534;
-
 u8* enableUsbLog = (u8*)0x805A0CD8;
 
 

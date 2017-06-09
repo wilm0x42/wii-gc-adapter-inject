@@ -361,10 +361,6 @@ void _start()
    
    //Disable usb log
    *enableUsbLog = 1;
-
-   //Allow me to check for successful
-   //code execution on console (without USB gecko)
-   *dbg1TeamMatch = 0x38600000;
    
    //Initialize heap
    USB_Initialize();
