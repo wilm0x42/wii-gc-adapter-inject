@@ -116,3 +116,7 @@ WOOT!!!!!!!
  --Button input is successfully being delivered to the game within dolphin.
    Analogue values aren't functional at all, and right now it requires
    a controller to be already plugged in for P1, but still.
+   --Okay, HOLY. CRAP.
+     It now works. Like, almost completely. Buttons, sticks.
+     All controller ports, even. Time to do some testing and debugging!!!
+     (Still not ready for console)
