@@ -151,10 +151,10 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
       	switch (j)
       	{
       		case 13://BTN_DPAD_LEFT:
-      			outBtns |= 0x0001;
+      			outBtns |= 0x0002;
       			break;
       		case 12://BTN_DPAD_RIGHT:
-      			outBtns |= 0x0002;
+      			outBtns |= 0x0001;
       			break;
       		case 14://BTN_DPAD_DOWN:
       			outBtns |= 0x0004;
@@ -270,6 +270,8 @@ static __attribute__((used)) int adapter_thread(u32 chan)
       {
       	 adapterThreadError |= 2;
       	 adapterThreadError = usbret;
+      	 *hId = -1;
+      	 adapterThreadError = USB_Initialize();//ugly hack
          return 1;//"Nope, this channel is busy"
       }
       
