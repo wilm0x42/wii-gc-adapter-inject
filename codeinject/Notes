@@ -120,3 +120,6 @@ WOOT!!!!!!!
      It now works. Like, almost completely. Buttons, sticks.
      All controller ports, even. Time to do some testing and debugging!!!
      (Still not ready for console)
+     
+Note: <!-- nop Ioctlv NCD_GETCONFIG (This seems to cause problems???) -->
+      <memory offset="0x8038eabc" value="0x60000000" />
