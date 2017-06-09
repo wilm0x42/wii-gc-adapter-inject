@@ -53,7 +53,7 @@ distribution.
 
 #include "usb.h"
 
-#define USB_HEAPSIZE                         16384
+#define USB_HEAPSIZE                        0x4000 //16384
 
 #define USBV0_IOCTL_CTRLMSG                      0
 #define USBV0_IOCTL_BLKMSG                       1
@@ -476,19 +476,24 @@ done:
 	return ret;
 }*/
 
+u32 intrMsgError = 0;
 static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoint,u16 wLength,void *rpData,usbcallback cb,void *userdata)
 {
 	s32 ret = IPC_ENOMEM;
 	struct _usb_msg *msg;
+	
+	intrMsgError = 1;
 
 	if(((s32)rpData%32)!=0) return IPC_EINVAL;
 	if(wLength && !rpData) return IPC_EINVAL;
 	if(!wLength && rpData) return IPC_EINVAL;
 	
+	intrMsgError = 2;
 
 	msg = (struct _usb_msg*)iosAlloc(*hId,sizeof(struct _usb_msg));
 	if(msg==NULL) return IPC_ENOMEM;
 	
+	intrMsgError = 3;
 
 	memset(msg, 0, sizeof(struct _usb_msg));
 
@@ -507,6 +512,8 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 		pLength = (u16*)iosAlloc(*hId,32);
 		if(pLength==NULL) goto done;
 		*pLength = wLength;
+		
+		intrMsgError = 4;
 
 		msg->vec[0].data = pEndP;
 		msg->vec[0].len = sizeof(u8);
@@ -521,6 +528,8 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 			ret = IOS_Ioctlv(device_id,ioctl,2,1,msg->vec);
 		//else
 		//	return IOS_IoctlvAsync(device_id,ioctl,2,1,msg->vec,__usbv0_messageCB,msg);
+		
+		intrMsgError = 5;
 
 done:
 		if(pEndP!=NULL) iosFree(*hId,pEndP);
