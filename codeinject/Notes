@@ -111,3 +111,8 @@ I've got it ACTUALLY writing data in memory of button inputs!!!
    8021658c is SPEC2_MakeStatus
    80029578 is PAD_ScanPads (probably)
    SI_GetStatus returns 0x20 with controller in
+   
+WOOT!!!!!!!
+ --Button input is successfully being delivered to the game within dolphin.
+   Analogue values aren't functional at all, and right now it requires
+   a controller to be already plugged in for P1, but still.

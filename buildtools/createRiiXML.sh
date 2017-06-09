@@ -77,7 +77,11 @@ adapter_getResponse_bl=$(../buildtools/generateBl 0x802161b4 0x$adapter_getRespo
       <memory offset="0x80228a00" value="0x60000000" />
       
 
+      <!-- Spoof gamecube controller all ports -->
+      <memory offset="0x8021601c" value="0x41820078" />
+      
       <!-- Spoof gamecube controller port 1 (Thx spunit262) -->
+      <!-- NOTE: This doesn't currently work. (Fix later) -->
       <memory offset="0x806971CC" value="0x60000000" />
       <memory offset="0x8152e29c" value="0x00000000" />
    </patch>
