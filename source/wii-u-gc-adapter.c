@@ -329,13 +329,6 @@ static u32 add_adapter(usb_device_entry* dev)
    return 0;
 }
 
-//Keeps GCC from complaining about "unused" functions
-static void dummy_use_functions()
-{
-   	adapter_thread(0);
-   	adapter_getType(0);
-}
-
 void _start()
 {
    //To mark beginning of our code here
@@ -368,10 +361,6 @@ void _start()
 			}
 		}
    }
-   
-   //Keeps GCC from complaining about
-   //"unused" functions
-   if (0) dummy_use_functions();
    
    //To mark the end of our code here
    __asm__ volatile ("mr 4,4");
