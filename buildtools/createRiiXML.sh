@@ -61,6 +61,9 @@ adapter_getResponse_bl=$(../buildtools/generateBl 0x802161b4 0x$adapter_getRespo
       <memory offset="0x802161b4" value="0x$adapter_getResponse_bl" />
       <!-- Branch to adapter_thread from PADRead (replace SI_IsChanBusy) -->
       <memory offset="$branchaddress" value="0x$adapter_thread_bl" />
+      
+      <!-- nop Ioctlv NCD_GETCONFIG (This mysteriously invalidates ata.fd) -->
+      <memory offset="0x8038eabc" value="0x60000000" />
 
       <!-- nop questionable function call (Might not be needed) -->
       <memory offset="0x802288a0" value="0x60000000" />

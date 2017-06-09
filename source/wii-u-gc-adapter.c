@@ -250,7 +250,8 @@ static __attribute__((used)) int adapter_getResponse(u32 chan, void* buf)
 //AKA adapter_isChanBusy(u32 chan)
 static __attribute__((used)) int adapter_thread(u32 chan)
 {
-   adapterThreadError = 0;
+   if (adapterThreadError == 0xff)
+   		adapterThreadError = 0;
 
    if (!addedAdapter)
    {
@@ -268,6 +269,7 @@ static __attribute__((used)) int adapter_thread(u32 chan)
       if (usbret != 37 || payload[0] != 0x21)
       {
       	 adapterThreadError |= 2;
+      	 adapterThreadError = usbret;
          return 1;//"Nope, this channel is busy"
       }
       
