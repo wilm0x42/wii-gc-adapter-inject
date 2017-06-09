@@ -239,10 +239,10 @@ static __attribute__((used)) int adapter_getResponse(u32 chan, void* buf)
     *((uint16_t*)buf) = a->controllers[0].buttons;
     ((s8*)buf)[4] = a->controllers[0].axis[2];//RX
     ((s8*)buf)[5] = a->controllers[0].axis[3];//RY
-    ((s8*)buf)[6] = a->controllers[0].axis[0];//LX
-    ((s8*)buf)[7] = a->controllers[0].axis[1];//LY
-    ((s8*)buf)[2] = a->controllers[0].axis[5];//TR
-    ((s8*)buf)[3] = a->controllers[0].axis[4];//TL
+    ((s8*)buf)[6] = a->controllers[0].axis[4];//LX
+    ((s8*)buf)[7] = a->controllers[0].axis[5];//LY
+    ((s8*)buf)[2] = a->controllers[0].axis[0];//TL
+    ((s8*)buf)[3] = a->controllers[0].axis[1];//TR
     
     return 1;//True for "Tremendous Successs"
 }
