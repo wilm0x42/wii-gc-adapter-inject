@@ -298,15 +298,11 @@ static __attribute__((used)) int adapter_thread(u32 chan)
 
 static u32 add_adapter(usb_device_entry* dev)
 {
-   //(struct adapter *)calloc(1, sizeof(struct adapter));
    struct adapter *a = &ata;
-   /*if (a == NULL)
-   {
-      return IPC_ENOMEM;
-   }*/
+   memset(a, 0, sizeof(struct adapter));
    a->device = dev;
    
-   //NOTE: We might want to use our own function, shown below.
+   //NOTE: We MIGHT want to use our own function, shown below.
    //Reason being, IUSB_OpenDeviceIds uses the game's
    //preexisting USB heap, and not our dedicated one.
    a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
