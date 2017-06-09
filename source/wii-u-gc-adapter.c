@@ -302,16 +302,9 @@ static u32 add_adapter(usb_device_entry* dev)
    memset(a, 0, sizeof(struct adapter));
    a->device = dev;
    
-   //NOTE: We MIGHT want to use our own function, shown below.
-   //Reason being, IUSB_OpenDeviceIds uses the game's
-   //preexisting USB heap, and not our dedicated one.
-   a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
-   if (a->fd < 0)
-   {
-      return a->fd;
-   }
-   
-   /*char* devPath = (char*)iosAlloc(*hId, 32);
+   //Below block of code in a nutshell:
+   // a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
+   char* devPath = (char*)iosAlloc(*hId, 32);
    char pathStr[] = "/dev/usb/oh0/57e/337";
    memset(devPath, 0, 32);
    int n;
@@ -321,7 +314,7 @@ static u32 add_adapter(usb_device_entry* dev)
    }
    a->fd = IOS_Open(devPath, 1|2);//Read | Write
    iosFree(*hId, devPath);
-   if (a->fd < 0) return a->fd;*/
+   if (a->fd < 0) return a->fd;
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    

@@ -31,8 +31,4 @@ s32 (*iosCreateHeap)(void* bufferLo, s32 size) = (void*)0x80213468;
 s32 (*IOS_Open)(const char *filepath,u32 mode) = (void*)0x802123a8;
 s32 (*IOS_Close)(s32 fd) = (void*)0x80212588;
 
-// Returns fd, even though this is also written to the pointer in argument 4
-s32 (*IUSB_OpenDeviceIds)(char* device_id,u16 vid,u16 pid,s32 *fd) = (void*)0x80228c30;
-
-
 #endif

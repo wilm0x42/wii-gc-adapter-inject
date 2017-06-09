@@ -72,10 +72,6 @@ adapter_getResponse_bl=$(../buildtools/generateBl 0x802161b4 0x$adapter_getRespo
       <!-- Branch to _start from within USB_LOG -->
       <memory offset="0x802288c4" value="0x$start_bl" />
       
-      <!-- TODO: See if this can be done in a more elegant way -->
-      <!-- nop the first call to USB_LOG (Original USB heap not initialized at this point?) -->
-      <memory offset="0x80228a00" value="0x60000000" />
-      
       <!-- Spoof gamecube controller ports -->
       <memory offset="0x8021601c" value="0x41820078" />
    </patch>
