@@ -19,6 +19,10 @@ int main()
         return 1;
     }
     
+    unsigned int code_begin = htonl(0x00D0C0DE);
+    fwrite(&code_begin, 4, 1, gct);
+    fwrite(&code_begin, 4, 1, gct);
+    
     char line[256];
     while (!feof(xml))
     {
