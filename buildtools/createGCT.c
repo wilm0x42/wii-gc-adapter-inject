@@ -49,6 +49,15 @@ int main()
             }
         }
     }
+    unsigned int codes_end1 = htonl(0xe0000000);//Full terminator 
+    unsigned int codes_end2 = htonl(0x80008000);
+    unsigned int codes_end3 = htonl(0xf0000000);//End of codes
+    unsigned int codes_end4 = htonl(0x00000000);
+    fwrite(&codes_end1, 4, 1, gct);
+    fwrite(&codes_end2, 4, 1, gct);
+    fwrite(&codes_end3, 4, 1, gct);
+    fwrite(&codes_end4, 4, 1, gct);
+    
     fclose(xml);
     fclose(gct);
 }
