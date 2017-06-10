@@ -110,7 +110,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).s $(OUTPUT).bin rii sd.raw
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).s $(OUTPUT).bin rii sd.raw gecko
 
 #---------------------------------------------------------------------------------
 sd.raw: rii
@@ -118,7 +118,7 @@ sd.raw: rii
 	@if [ -f "./sd.raw" ]; then rm ./sd.raw; fi
 	@dd if=/dev/zero bs=1M count=256 of=./sd.raw
 	@mkfs.fat -F 32 ./sd.raw
-	@mcopy -s -i ./sd.raw ./rii/* ::
+	@mcopy -s -i ./sd.raw ./rii/* ./gecko/* ::
 	@echo "Done"
 
 #---------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ gecko: rii
 	@echo $(shell printf "%08x\n" $(shell du -b $(OUTPUT).bin | cut -c1-4)) | xxd -r -p >> wii-gc-adapter.gpf
 	@cat ../wii-gc-adapter-inject.bin >> wii-gc-adapter.gpf
 	@cp wii-gc-adapter.gpf ../gecko/patch/RSBE01.gpf
-	@../buildtools/createGCT.sh
+	@../buildtools/createGCT
 	@cp wii-gc-adapter.gct ../gecko/codes/RSBE01.gct
 	@echo "Done"
 
