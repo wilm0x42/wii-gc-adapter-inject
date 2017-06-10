@@ -123,3 +123,9 @@ WOOT!!!!!!!
      
 Note: <!-- nop Ioctlv NCD_GETCONFIG (This seems to cause problems???) -->
       <memory offset="0x8038eabc" value="0x60000000" />
+      
+Riivolution is dead.
+  --That is, it's crashing on console, and I have no way of debugging it.
+    So, as an alternative, I'm gonna try using a comPLETELY undocumented
+    feature of Gecko OS, Gecko Patch Format. Fingers crossed this isn't
+    just unimplemented TODO stuff in the source code. ;D

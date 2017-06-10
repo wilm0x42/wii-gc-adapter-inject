@@ -1,5 +1,6 @@
 /codeinject/*
 /build/
 /rii/
+/gecko/
 /*.elf
 /*.bin

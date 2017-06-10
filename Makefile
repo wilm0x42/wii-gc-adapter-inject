@@ -132,6 +132,20 @@ DEPENDS	:=	$(OFILES:.o=.d)
 
 #$(OUTPUT).dol: $(OUTPUT).elf
 
+gecko: rii
+	@echo "Creating gecko image..."
+	@[ -d ../gecko ] || mkdir -p ../gecko
+	@[ -d ../gecko/patch ] || mkdir -p ../gecko/patch
+	@[ -d ../gecko/codes ] || mkdir -p ../gecko/codes
+	@echo 0x01 | xxd -r -p > wii-gc-adapter.gpf
+	@echo $(CODEADDRESS) | xxd -r -p >> wii-gc-adapter.gpf
+	@echo $(shell printf "%08x\n" $(shell du -b $(OUTPUT).bin | cut -c1-4)) | xxd -r -p >> wii-gc-adapter.gpf
+	@cat ../wii-gc-adapter-inject.bin >> wii-gc-adapter.gpf
+	@cp wii-gc-adapter.gpf ../gecko/patch/RSBE01.gpf
+	@../buildtools/createGCT.sh
+	@cp wii-gc-adapter.gct ../gecko/codes/RSBE01.gct
+	@echo "Done"
+
 rii: $(OUTPUT).bin
 	@echo "Creating riivolution image..."
 	@[ -d ../rii ] || mkdir -p ../rii

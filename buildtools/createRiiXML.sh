@@ -34,7 +34,7 @@ adapter_getResponse_bl=$(../buildtools/generateBl 0x802161b4 0x$adapter_getRespo
 
 
 (cat > wii-gc-adapter.xml) << _EOF_
-<wiidisc version="1">
+<wiidisc version="1" root="/riivolution">
    <id game="RSB">
        <region type="E" />
    </id>
