@@ -116,7 +116,7 @@ clean:
 sd.raw: rii
 	@echo "Generating SD image..."
 	@if [ -f "./sd.raw" ]; then rm ./sd.raw; fi
-	@dd if=/dev/zero bs=1M count=256 of=./sd.raw
+	@dd if=/dev/zero bs=1M count=128 of=./sd.raw
 	@mkfs.fat -F 32 ./sd.raw
 	@mcopy -s -i ./sd.raw ./rii/* ./gecko/* ::
 	@echo "Done"
