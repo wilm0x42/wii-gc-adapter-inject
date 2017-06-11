@@ -129,3 +129,9 @@ Riivolution is dead.
     So, as an alternative, I'm gonna try using a comPLETELY undocumented
     feature of Gecko OS, Gecko Patch Format. Fingers crossed this isn't
     just unimplemented TODO stuff in the source code. ;D
+     Edit: I should mention that I happened upon the Gecko Patch File code
+     while meandering through the gecko os source code. So, that was... lucky?
+    --YESSSSSSSSS!!! It does in fact work!!!
+      And I also have the single-word patches working in a GCT.
+      So... It's all gecko now. :)
+      All that's left... GOTTA FIND A HOME FOR MY CODE!!!

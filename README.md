@@ -4,7 +4,7 @@ Based off of wii-u-gc-adapter by ToadKing, wii-gc-adapter is a
 mod for Super Smash Bros. Brawl that should, when it's completed,
 allow you to use gamecube controllers, via the official
 Nintendo Wii u Gamecube Controller Adapter. Implementation
-is based on riivolution.
+is based on Gecko OS (Riivolution, previously).
 
 Non-USA versions aren't _planned_, but you never know!
 
@@ -27,9 +27,10 @@ Requires: (Please let me know if I'm forgetting something here)
 [devkitPPC](https://devkitpro.org/) and libogc for compilation,
 Mtools for sd.raw (`sudo apt-get install mtools`).
 
-If make complains about "generateBl" in any way, try
-recompiling generateBl, within `buildtools`:
+If make complains about "generateBl" or "createGCT" in any way, try
+recompiling them, within `buildtools`:
 `rm generateBl; gcc -o generateBl ./generateBl.c`
+`rm createGCT; gcc -o createGCT ./createGCT.c`
 
 
 ## Thanks
