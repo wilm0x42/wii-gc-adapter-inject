@@ -6,6 +6,7 @@ int main()
 {
     FILE* xml = fopen("wii-gc-adapter.xml", "r");
     FILE* gct = fopen("wii-gc-adapter.gct", "w");
+    FILE* txt = fopen("wii-gc-adapter-gct.txt", "w");
     
     if (!xml)
     {
@@ -50,6 +51,8 @@ int main()
                 
                 fwrite(&geckocode, 4, 1, gct);
                 fwrite(&outvalue, 4, 1, gct);
+                
+                fprintf(txt, "%08X %08X\n", ntohl(geckocode), value);
             }
         }
     }
@@ -64,4 +67,5 @@ int main()
     
     fclose(xml);
     fclose(gct);
+    fclose(txt);
 }
