@@ -26,7 +26,7 @@ INCLUDES	:=
 #---------------------------------------------------------------------------------
 
 #The address where the code will be injected in memory
-CODEADDRESS = 0x80001800
+CODEADDRESS = 0x800044c0
 #The address of the instruction that will be overwritten
 #with a branch to adapter_thread()
 #In this case, we're overwriting PAD_Read's call to SI_IsChanBusy,
