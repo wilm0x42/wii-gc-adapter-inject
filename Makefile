@@ -159,6 +159,7 @@ rii: $(OUTPUT).bin
 
 $(OUTPUT).bin: $(OUTPUT).elf
 	@powerpc-eabi-objcopy -O binary $< $@
+	@mv $(OUTPUT).elf .
 
 $(OUTPUT).elf: $(OUTPUT).g.elf
 	@powerpc-eabi-strip -s -R .init -R .fini -R .comment -o $@ $<
