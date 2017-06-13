@@ -135,3 +135,11 @@ Riivolution is dead.
       And I also have the single-word patches working in a GCT.
       So... It's all gecko now. :)
       All that's left... GOTTA FIND A HOME FOR MY CODE!!!
+      
+IT  W O R K S !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (6/12/17)
+  -- What were the chances of there being a big ol'
+     COMPLETELY UNUSED buffer just after the hardware init code?
+     :)))))))))))))))))
+     There are a few bugs, and the latency isn't great, but IT WORKS!!!!
+     First match ever played on a non-gc-compatible wii with an unmodified
+     gamecube controller: Wario vs Wario, Final Destination. :)))))

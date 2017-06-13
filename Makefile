@@ -144,6 +144,7 @@ gecko: rii
 	@cp wii-gc-adapter.gpf ../gecko/patch/RSBE01.gpf
 	@../buildtools/createGCT
 	@cp wii-gc-adapter.gct ../gecko/codes/RSBE01.gct
+	@cp wii-gc-adapter-gct.txt ..
 	@echo "Done"
 
 rii: $(OUTPUT).bin
