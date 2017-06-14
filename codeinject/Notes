@@ -143,3 +143,6 @@ IT  W O R K S !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (6/12/17)
      There are a few bugs, and the latency isn't great, but IT WORKS!!!!
      First match ever played on a non-gc-compatible wii with an unmodified
      gamecube controller: Wario vs Wario, Final Destination. :)))))
+     
+So, after a little digging, I think that running adapter_thread at 800178b4,
+instead of the middle of PAD_Read, should help optimize latency. So... That's on the todo list.

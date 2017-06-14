@@ -10,7 +10,7 @@ Non-USA versions aren't _planned_, but you never know!
 
 Of course, note that it should be possible to port
 this to games besides SSBB with relative ease.
-(Haven't tested this yet, but... _theoretically..._
+(Haven't tested this yet, but... _theoretically..._)
 
 For the bug tracker and whatnot, see
 [the github repo.](https://github.com/wilm0x42/wii-gc-adapter-inject)
