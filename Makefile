@@ -162,7 +162,7 @@ $(OUTPUT).bin: $(OUTPUT).elf
 	@mv $(OUTPUT).elf .
 
 $(OUTPUT).elf: $(OUTPUT).g.elf
-	@powerpc-eabi-strip -s -R .init -R .fini -R .comment -o $@ $<
+	@powerpc-eabi-strip -s -R .init -R .fini -R .comment -R .eh_frame_hdr -R .eh_frame -R .jcr -R .ctors -R .dtors -o $@ $<
 	@mv $(OUTPUT).g.elf wii-gc-adapter.g.elf
 	
 $(OUTPUT).g.elf: $(OFILES)
