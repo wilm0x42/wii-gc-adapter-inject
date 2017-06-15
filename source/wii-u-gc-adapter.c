@@ -69,7 +69,6 @@ struct ports
 
 struct adapter
 {
-   volatile bool quitting;
    usb_device_entry* device;
    s32 fd;
    unsigned char rumble[5];
@@ -230,69 +229,77 @@ static __attribute__((used)) u32 adapter_getStatus(u32 chan)
 
 static __attribute__((used)) int adapter_getResponse(u32 chan, void* buf)
 {
-	struct adapter *a = &ata;
-	if (!a) return 0;//False for "Failure"
+	if (!addedAdapter)
+		return 0;//False for "Failure"
 
 	memset(buf, 0, 8);
-    *((uint16_t*)buf) = a->controllers[chan].buttons;
-    ((s8*)buf)[4] = a->controllers[chan].axis[2];//RX
-    ((s8*)buf)[5] = a->controllers[chan].axis[3];//RY
-    ((s8*)buf)[6] = a->controllers[chan].axis[4];//LX
-    ((s8*)buf)[7] = a->controllers[chan].axis[5];//LY
-    ((s8*)buf)[2] = a->controllers[chan].axis[0];//TL
-    ((s8*)buf)[3] = a->controllers[chan].axis[1];//TR
+    *((uint16_t*)buf) = ata.controllers[chan].buttons;
+    ((s8*)buf)[4] = ata.controllers[chan].axis[2];//RX
+    ((s8*)buf)[5] = ata.controllers[chan].axis[3];//RY
+    ((s8*)buf)[6] = ata.controllers[chan].axis[4];//LX
+    ((s8*)buf)[7] = ata.controllers[chan].axis[5];//LY
+    ((s8*)buf)[2] = ata.controllers[chan].axis[0];//TL
+    ((s8*)buf)[3] = ata.controllers[chan].axis[1];//TR
     
     return 1;//True for "Tremendous Successs"
 }
 
-//AKA adapter_isChanBusy(u32 chan)
-static __attribute__((used)) int adapter_thread(u32 chan)
+static __attribute__((used)) int adapter_isChanBusy(u32 chan)
 {
+	return 0;
+	if (!addedAdapter)
+		return 1;//Busy, not ready yet
+		
+	if (ata.controllers[chan].connected)
+		return 0;//Not busy
+		
+	return 1;//Otherwise... busy
+}
+
+//This previously replaced SI_IsChanBusy
+//Now it replaces the instruction "addi r3, r3, 208"
+//So all return values should be (inputNum + 208)
+static __attribute__((used)) int adapter_thread(int inputNum)
+{
+   int ret = inputNum + 208;
+
    if (!addedAdapter)
-   {
-   		return 1;//"Channel is busy. Try again later."
-   }
+   		return ret;
    
    struct adapter *a = &ata;
    
-   if (!a->quitting)
+   unsigned char payload[37] ATTRIBUTE_ALIGN(32);
+   int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
+   if (usbret != 37 || payload[0] != 0x21)
    {
-      unsigned char payload[37] ATTRIBUTE_ALIGN(32);
-      int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
-      if (usbret != 37 || payload[0] != 0x21)
-      {
-         //ugly hack
-      	 *hId = -1;
-      	 USB_Initialize();
-      	 
-         return 1;//"Nope, this channel is busy"
-      }
-      
-      unsigned char *controller = &payload[1];
-
-      //unsigned char rumble[5] ATTRIBUTE_ALIGN(32) = {0x11, 0, 0, 0, 0};
-      //struct timespec current_time ATTRIBUTE_ALIGN(32) = {0};
-      //clock_gettime(&current_time);
-      
-      int i;
-      for (i = 0; i < 4; i++, controller += 9)
-      {
-         handle_payload(i, &a->controllers[i], controller);
-         
-         //rumble[i+1] = 0;
-      }
-
-      /*if (memcmp(rumble, a->rumble, sizeof(rumble)) != 0)
-      {
-         memcpy(a->rumble, rumble, sizeof(rumble));
-         USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(a->rumble), a->rumble);
-      }*/
+      //ugly hack
+   	  *hId = -1;
+   	  USB_Initialize();
+ 	 
+	  return ret;
    }
+  
+   unsigned char *controller = &payload[1];
+
+   //unsigned char rumble[5] ATTRIBUTE_ALIGN(32) = {0x11, 0, 0, 0, 0};
+   //struct timespec current_time ATTRIBUTE_ALIGN(32) = {0};
+   //clock_gettime(&current_time);
    
-   if (!a->controllers[chan].connected)
-   		return 1;//"Sorry, this channel is busy right now."
-   		
-   return 0;//"No, this channel isn't busy at this time."
+   int i;
+   for (i = 0; i < 4; i++, controller += 9)
+   {
+      handle_payload(i, &a->controllers[i], controller);
+      
+      //rumble[i+1] = 0;
+   }
+ 
+   /*if (memcmp(rumble, a->rumble, sizeof(rumble)) != 0)
+   {
+      memcpy(a->rumble, rumble, sizeof(rumble));
+      USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(a->rumble), a->rumble);
+   }*/
+   
+   return ret;
 }
 
 
@@ -315,6 +322,7 @@ static u32 add_adapter(usb_device_entry* dev)
    a->fd = IOS_Open(devPath, 1|2);//Read | Write
    iosFree(*hId, devPath);
    if (a->fd < 0) return a->fd;
+   
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    

@@ -28,10 +28,9 @@ INCLUDES	:=
 #The address where the code will be injected in memory
 CODEADDRESS = 0x800044c0
 #The address of the instruction that will be overwritten
-#with a branch to adapter_thread()
-#In this case, we're overwriting PAD_Read's call to SI_IsChanBusy,
-#and adapter_thread will simulate this function accordingly :)
-BRANCHADDRESS = 0x80216098
+#This address should be right before VIWaitForRetrace,
+#thus optimizing controller latency.
+BRANCHADDRESS = 0x800178b4
 
 CFLAGS	= -mno-sdata -ffreestanding -mno-eabi -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables -s -Os -nostdlib --save-temps -nostartfiles -Wno-implicit-function-declaration -Wall $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	$(CFLAGS)
