@@ -77,8 +77,6 @@ struct adapter
 };
 
 
-static struct adapter adapters;
-
 static struct adapter ata; //Adapter Thread Adapter
 
 volatile bool addedAdapter = false;
@@ -329,10 +327,6 @@ static u32 add_adapter(usb_device_entry* dev)
    int usbret = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
    if (usbret < 0)
 		return usbret;
-
-   struct adapter *old_head = adapters.next;
-   adapters.next = a;
-   a->next = old_head;
    
    return 0;
 }
