@@ -73,7 +73,7 @@ adapter_isChanBusy_bl=$(../buildtools/generateBl 0x80216098 0x$adapter_isChanBus
       <!-- Branch to _start from within USB_LOG -->
       <memory offset="0x802288c4" value="0x$start_bl" />
       <!-- nop first call to USB_LOG (orig usb heap not initialized yet) -->
-      <!memory offset="0x80228a00" value="0x60000000" />
+      <memory offset="0x80228a00" value="0x60000000" />
       
       <!-- Spoof gamecube controller ports -->
       <memory offset="0x8021601c" value="0x41820078" />
