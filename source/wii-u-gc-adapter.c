@@ -257,9 +257,9 @@ static __attribute__((used)) int adapter_isChanBusy(u32 chan)
 //This previously replaced SI_IsChanBusy
 //Now it replaces the instruction "addi r3, r3, 208"
 //So all return values should be (inputNum + 208)
-static __attribute__((used)) int adapter_thread(int inputNum)
+static __attribute__((used)) u32 adapter_thread(int inputNum)
 {
-   int ret = inputNum + 208;
+   u32 ret = inputNum + 208;
 
    if (!addedAdapter)
    		return ret;
