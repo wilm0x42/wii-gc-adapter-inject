@@ -143,7 +143,9 @@ gecko: rii
 	@cp wii-gc-adapter.gpf ../gecko/patch/RSBE01.gpf
 	@../buildtools/createGCT
 	@cp wii-gc-adapter.gct ../gecko/codes/RSBE01.gct
-	@cp wii-gc-adapter-gct.txt ..
+	@echo "Wii U Gamecube adapter drop-in support [wilm0x42]" > ../wii-gc-adapter-gct.txt
+	@cat wii-gc-adapter-gct.txt >> ../wii-gc-adapter-gct.txt
+	@echo "E0000000 80008000" >> ../wii-gc-adapter-gct.txt
 	@echo "Done"
 
 rii: $(OUTPUT).bin
