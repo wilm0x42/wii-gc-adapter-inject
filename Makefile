@@ -146,6 +146,7 @@ gecko: rii
 	@echo "Wii U Gamecube adapter drop-in support [wilm0x42]" > ../wii-gc-adapter-gct.txt
 	@cat wii-gc-adapter-gct.txt >> ../wii-gc-adapter-gct.txt
 	@echo "E0000000 80008000" >> ../wii-gc-adapter-gct.txt
+	@mv $(OUTPUT).bin .
 	@echo "Done"
 
 rii: $(OUTPUT).bin
