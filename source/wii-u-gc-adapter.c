@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <time.h> //#include <stdio.h>
+#include <time.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -47,7 +47,6 @@ typedef s32 __s32;
 #define STATE_NORMAL   0x10
 #define STATE_WAVEBIRD 0x20
 
-#define MAX_FF_EVENTS 4
 
 const int AXIS_OFFSET_VALUES[6] = {
    ABS_X,
@@ -97,7 +96,7 @@ static unsigned char connected_type(unsigned char status)
 }
 
 
-static __attribute__((noinline)) void handle_payload(int i, struct ports *port, unsigned char *payload/*, struct timespec *current_time*/)
+static __attribute__((noinline)) void handle_payload(int i, struct ports *port, unsigned char *payload)
 {
    unsigned char status = payload[0];
    unsigned char type = connected_type(status);
@@ -121,17 +120,7 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
    {
       port->type = type;
    }
-
-   /*input_event events[12+6+1];// 12 + 6 + 1 // buttons + axis + syn event
-   memset(&events, 0, sizeof(events));
-   int n;
-   for (n = 0; n < sizeof(events); n++)
-   {
-		char* ptr = (char*)events;
-		ptr += n;
-		*ptr = 0;
-   }
-   int e_count = 0;*/
+   
 
    uint16_t btns = (uint16_t) payload[1] << 8 | (uint16_t) payload[2];
    uint16_t outBtns = 0;
@@ -190,12 +179,7 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
 
    for (j = 0; j < 6; j++)
    {
-      unsigned char value = payload[j+3];
-
-      //if (AXIS_OFFSET_VALUES[j] == ABS_Y || AXIS_OFFSET_VALUES[j] == ABS_RY)
-         //value ^= 0xFF; // flip from 0 - 255 to 255 - 0
-
-      port->axis[j] = value;
+      port->axis[j] = payload[j+3];
    }
 }
 
