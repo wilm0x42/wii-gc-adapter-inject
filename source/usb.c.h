@@ -249,7 +249,8 @@ done:
 
 s32 USB_Initialize()
 {
-	if(*hId==-1) *hId = iosCreateHeap(IPC_GetBufferLo(), USB_HEAPSIZE);
+	//This is kind of a dirty hack, but oh well
+	if(*hId==-1) hId = origUsbHeapId;//iosCreateHeap(IPC_GetBufferLo(), USB_HEAPSIZE);
 	if(*hId<0) return IPC_ENOMEM;
 
 	/*if (ven_host==NULL) {

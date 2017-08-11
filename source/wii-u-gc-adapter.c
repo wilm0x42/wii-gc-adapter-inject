@@ -307,18 +307,20 @@ static u32 add_adapter(usb_device_entry* dev)
    memset(a, 0, sizeof(struct adapter));
    a->device = dev;
    
-   //Below block of code in a nutshell:
-   // a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
-   char* devPath = (char*)iosAlloc(*hId, 32);
-   char pathStr[] = "/dev/usb/oh0/57e/337";
-   memset(devPath, 0, 32);
-   int n;
-   for (n = 0; n < sizeof(pathStr); n++)
-   {
-   		devPath[n] = pathStr[n];
-   }
-   a->fd = IOS_Open(devPath, 1|2);//Read | Write
-   iosFree(*hId, devPath);
+   //If we ever ditch IUSB_OpenDeviceIds again, here's the code for that:
+   /*
+	   char* devPath = (char*)iosAlloc(*hId, 32);
+	   char pathStr[] = "/dev/usb/oh0/57e/337";
+	   memset(devPath, 0, 32);
+	   int n;
+	   for (n = 0; n < sizeof(pathStr); n++)
+	   {
+	   		devPath[n] = pathStr[n];
+	   }
+	   a->fd = IOS_Open(devPath, 1|2);//Read | Write
+	   iosFree(*hId, devPath);
+   */
+   a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
    if (a->fd < 0) return a->fd;
    
 
