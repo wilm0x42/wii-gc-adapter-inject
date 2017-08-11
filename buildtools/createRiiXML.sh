@@ -8,6 +8,7 @@ adapter_getType_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep ada
 adapter_getStatus_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep adapter_getStatus | cut -c9-16)
 adapter_getResponse_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep adapter_getResponse | cut -c9-16)
 adapter_isChanBusy_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep adapter_isChanBusy | cut -c9-16)
+adapter_controlMotor_addr=$(powerpc-eabi-readelf -s ./wii-gc-adapter.g.elf | grep adapter_controlMotor | cut -c9-16)
 start_addr=$(powerpc-eabi-readelf -h ./wii-gc-adapter.g.elf | grep "Entry point address:" | cut -c38- | tr -d '\n\r')
 
 echo "Place code in memory at $codeaddress."
@@ -23,6 +24,8 @@ echo "Overwrite PADRead's call to SI_GetResponse (802161b4)"
 echo "with a call to adapter_getResponse ($adapter_getResponse_addr)."
 echo "Overwrite PADRead's call to SI_IsChanBusy (80216098)"
 echo "with a call to adapter_isChanBusy ($adapter_isChanBusy_addr)."
+echo "Redirect PAD_ControlMotor (802162c4) to"
+echo "adapter_controlMotor ($adapter_controlMotor_addr)."
 
 #Branch to _start from within USB_LOG
 start_bl=$(../buildtools/generateBl 0x802288c4 $start_addr)
@@ -35,6 +38,7 @@ adapter_getType_bl=$(../buildtools/generateBl 0x8021619c 0x$adapter_getType_addr
 adapter_getStatus_bl=$(../buildtools/generateBl 0x802160c0 0x$adapter_getStatus_addr)
 adapter_getResponse_bl=$(../buildtools/generateBl 0x802161b4 0x$adapter_getResponse_addr)
 adapter_isChanBusy_bl=$(../buildtools/generateBl 0x80216098 0x$adapter_isChanBusy_addr)
+adapter_controlMotor_bl=$(../buildtools/generateBl 0x802162c4 0x$adapter_controlMotor_addr)
 
 
 (cat > wii-gc-adapter.xml) << _EOF_
@@ -67,6 +71,10 @@ adapter_isChanBusy_bl=$(../buildtools/generateBl 0x80216098 0x$adapter_isChanBus
       <memory offset="0x802161b4" value="0x$adapter_getResponse_bl" />
       <!-- Substitute call to SI_IsChanBusy with adapter_isChanBusy -->
       <memory offset="0x80216098" value="0x$adapter_isChanBusy_bl" />
+      
+      <!-- Redirect PAD_ControlMotor to adapter_controlMotor -->
+      <memory offset="0x802162c4" value="0x$adapter_controlMotor_bl" />
+      <memory offset="0x802162c8" value="0x48000078" />
 
       <!-- Make USB_LOG run -->
       <memory offset="0x80228874" value="0x2c000001" />

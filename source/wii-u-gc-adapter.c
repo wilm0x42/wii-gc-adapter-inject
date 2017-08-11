@@ -71,7 +71,8 @@ struct adapter
 {
    usb_device_entry* device;
    s32 fd;
-   unsigned char rumble[5];
+   unsigned char rumble[5] ATTRIBUTE_ALIGN(32);
+   bool rumbleChanged;
    struct ports controllers[4];
    struct adapter *next;
 };
@@ -185,7 +186,6 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
       }
    }
    
-   //Write button state
    port->buttons = outBtns;
 
    for (j = 0; j < 6; j++)
@@ -244,7 +244,7 @@ static __attribute__((used)) int adapter_getResponse(u32 chan, void* buf)
 
 static __attribute__((used)) int adapter_isChanBusy(u32 chan)
 {
-	return 0;
+	return 0;//TODO: Was this a hack, or an oversight?
 	if (!addedAdapter)
 		return 1;//Busy, not ready yet
 		
@@ -252,6 +252,15 @@ static __attribute__((used)) int adapter_isChanBusy(u32 chan)
 		return 0;//Not busy
 		
 	return 1;//Otherwise... busy
+}
+
+static __attribute__((used)) void adapter_controlMotor(s32 chan, u32 cmd)
+{
+	if (chan < 0 || chan > 3 || !addedAdapter)
+		return;
+		
+	ata.rumble[chan + 1] = cmd;
+	ata.rumbleChanged = true;
 }
 
 //This previously replaced SI_IsChanBusy
@@ -273,24 +282,18 @@ static __attribute__((used)) u32 adapter_thread(int inputNum)
 	  return ret;
   
    unsigned char *controller = &payload[1];
-
-   //unsigned char rumble[5] ATTRIBUTE_ALIGN(32) = {0x11, 0, 0, 0, 0};
-   //struct timespec current_time ATTRIBUTE_ALIGN(32) = {0};
-   //clock_gettime(&current_time);
    
    int i;
    for (i = 0; i < 4; i++, controller += 9)
    {
       handle_payload(i, &a->controllers[i], controller);
-      
-      //rumble[i+1] = 0;
    }
  
-   /*if (memcmp(rumble, a->rumble, sizeof(rumble)) != 0)
+   if (a->rumbleChanged)
    {
-      memcpy(a->rumble, rumble, sizeof(rumble));
       USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(a->rumble), a->rumble);
-   }*/
+      a->rumbleChanged = false;
+   }
    
    return ret;
 }
@@ -301,6 +304,7 @@ static u32 add_adapter(usb_device_entry* dev)
    struct adapter *a = &ata;
    memset(a, 0, sizeof(struct adapter));
    a->device = dev;
+   a->rumble[0] = 0x11;
    
    //If we ever ditch IUSB_OpenDeviceIds again, here's the code for that:
    /*
