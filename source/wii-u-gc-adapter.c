@@ -330,16 +330,12 @@ static u32 add_adapter(usb_device_entry* dev)
 
 void _start()
 {
-   //To mark beginning of our code here
-   __asm__("mr 3,3");
-   
    //Disable usb log
    *enableUsbLog = 1;
    
    //Initialize heap
    USB_Initialize();
    
-
    //Until we've found and successfully
    //initialized the adapter
    while (!addedAdapter)
@@ -360,7 +356,4 @@ void _start()
 			}
 		}
    }
-   
-   //To mark the end of our code here
-   __asm__ volatile ("mr 4,4");
 }
