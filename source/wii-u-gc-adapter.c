@@ -256,7 +256,8 @@ static __attribute__((used)) int adapter_isChanBusy(u32 chan)
 
 //This previously replaced SI_IsChanBusy
 //Now it replaces the instruction "addi r3, r3, 208"
-//So all return values should be (inputNum + 208)
+//So all return values should be (inputNum + 208), no exceptions.
+//(Pun intended)
 static __attribute__((used)) u32 adapter_thread(int inputNum)
 {
    u32 ret = inputNum + 208;
@@ -269,13 +270,7 @@ static __attribute__((used)) u32 adapter_thread(int inputNum)
    unsigned char payload[37] ATTRIBUTE_ALIGN(32);
    int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
    if (usbret != 37 || payload[0] != 0x21)
-   {
-      //ugly hack
-   	  *hId = -1;
-   	  USB_Initialize();
- 	 
 	  return ret;
-   }
   
    unsigned char *controller = &payload[1];
 
