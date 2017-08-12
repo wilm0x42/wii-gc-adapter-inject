@@ -179,7 +179,43 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
 
    for (j = 0; j < 6; j++)
    {
-      port->axis[j] = payload[j+3];
+   	  unsigned char value = payload[j+3];
+   	  
+   	  if (AXIS_OFFSET_VALUES[j] == ABS_X || AXIS_OFFSET_VALUES[j] == ABS_Y)
+   	  {
+   	  	if (value >= 20) value -= 20;
+   	  	if (value < 216)
+   	  	{
+   	  		value *= 1.1860;
+   	  	} else
+   	  	{
+   	  		value = 255;
+   	  	}
+   	  }
+   	  if (AXIS_OFFSET_VALUES[j] == ABS_RX || AXIS_OFFSET_VALUES[j] == ABS_RY)
+   	  {
+   	  	if (value >= 30) value -= 30;
+   	  	if (value < 196)
+   	  	{
+   	  		value *= 1.3076;
+   	  	} else
+   	  	{
+   	  		value = 255;
+   	  	}
+   	  }
+   	  if (AXIS_OFFSET_VALUES[j] == ABS_Z || AXIS_OFFSET_VALUES[j] == ABS_RZ)
+   	  {
+   	  	if (value >= 25) value -= 25;
+   	  	if (value < 200)
+   	  	{
+   	  		value *= 1.2750;
+   	  	} else
+   	  	{
+   	  		value = 255;
+   	  	}
+   	  }
+   	  
+      port->axis[j] = value;
    }
 }
 
@@ -228,7 +264,6 @@ static __attribute__((used)) int adapter_getResponse(u32 chan, void* buf)
 
 static __attribute__((used)) int adapter_isChanBusy(u32 chan)
 {
-	return 0;//TODO: Was this a hack, or an oversight?
 	if (!addedAdapter)
 		return 1;//Busy, not ready yet
 		
@@ -245,6 +280,11 @@ static __attribute__((used)) void adapter_controlMotor(s32 chan, u32 cmd)
 		
 	ata.rumble[chan + 1] = cmd;
 	ata.rumbleChanged = true;
+}
+
+static s32 dummyUsbCB(s32 result, void* dummy)
+{
+	return 0;
 }
 
 //This previously replaced SI_IsChanBusy
@@ -275,7 +315,7 @@ static __attribute__((used)) u32 adapter_thread(int inputNum)
  
    if (a->rumbleChanged)
    {
-      USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(a->rumble), a->rumble);
+      if (USB_WriteIntrMsgAsync(a->fd, USB_ENDPOINT_OUT, sizeof(a->rumble), a->rumble, dummyUsbCB, NULL) >= 0)
       a->rumbleChanged = false;
    }
    
@@ -303,8 +343,9 @@ static u32 add_adapter(usb_device_entry* dev)
 	   a->fd = IOS_Open(devPath, 1|2);//Read | Write
 	   iosFree(*hId, devPath);
    */
-   a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
-   if (a->fd < 0) return a->fd;
+   //a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
+   //if (a->fd < 0) return a->fd;
+   if (IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd) < 0) return a->fd;
    
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
@@ -326,6 +367,7 @@ void _start()
    
    //Until we've found and successfully
    //initialized the adapter
+   addedAdapter = false;
    while (!addedAdapter)
    {
 	    usb_device_entry devices[2];

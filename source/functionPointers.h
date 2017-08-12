@@ -21,6 +21,7 @@ void* memset(void *__s, int __c, unsigned int num)
 
 
 s32 (*IOS_Ioctlv)(s32 fd, s32 ioctl, s32 cnt_in, s32 cnt_io, ioctlv *argv) = (void*)0x80213090;//0x80212a40;
+s32 (*IOS_IoctlvAsync)(s32 fd,s32 ioctl,s32 cnt_in,s32 cnt_io,ioctlv *argv,ipccallback ipc_cb,void *usrdata) = (void*)0x80212fac;
 //argument 3 is likely the desired alignment boundary,
 //but we'll probably always want 0x20, so this
 //macro makes it work more as expected
