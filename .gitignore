@@ -5,3 +5,6 @@
 /*.elf
 /*.bin
 /wii-gc-adapter-gct.txt
+/buildtools/createGCT
+/buildtools/createGPF
+/buildtools/generateBl

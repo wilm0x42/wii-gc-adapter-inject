@@ -22,6 +22,9 @@ For the bug tracker and whatnot, see
 Theoretically, it _might_ build on windows with cygwin,
 but I don't know, and really couldn't care less.
 
+First, you just need to `make` the buildtools:
+`cd buildtools; make; cd ..`
+
 Use `make` for building:
  * `make` to build complete mod.
  * `make clean` to delete generated files.
@@ -31,11 +34,6 @@ Requires: (Please let me know if I'm forgetting something here)
 
 [devkitPPC](https://devkitpro.org/) and libogc for compilation,
 Mtools for sd.raw (`sudo apt-get install mtools`).
-
-If make complains about "generateBl" or "createGCT" in any way, try
-recompiling them, within `buildtools`:
-`rm generateBl; gcc -o generateBl ./generateBl.c`
-`rm createGCT; gcc -o createGCT ./createGCT.c`
 
 ### Usage
 To use, copy the contents of the generated `gecko` folder to the
