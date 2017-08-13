@@ -1,7 +1,7 @@
 /codeinject/*
 /build/
-/rii/
-/gecko/
+/dbg/
+/patch/
 /*.elf
 /*.bin
 /wii-gc-adapter-gct.txt

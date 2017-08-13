@@ -99,7 +99,7 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
 					#-L$(LIBOGC_LIB)
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
-.PHONY: $(BUILD) clean
+.PHONY: $(BUILD) clean sd.raw
 
 #---------------------------------------------------------------------------------
 $(BUILD):
@@ -109,15 +109,15 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).s $(OUTPUT).bin rii sd.raw gecko
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).s $(OUTPUT).bin dbg sd.raw patch
 
 #---------------------------------------------------------------------------------
-sd.raw: rii
+sd.raw:
 	@echo "Generating SD image..."
 	@if [ -f "./sd.raw" ]; then rm ./sd.raw; fi
 	@dd if=/dev/zero bs=1M count=128 of=./sd.raw
 	@mkfs.fat -F 32 ./sd.raw
-	@mcopy -s -i ./sd.raw ./rii/* ./gecko/* ::
+	@mcopy -s -i ./sd.raw ./dbg/* ./patch ::
 	@echo "Done"
 
 #---------------------------------------------------------------------------------
@@ -132,9 +132,8 @@ DEPENDS	:=	$(OFILES:.o=.d)
 #$(OUTPUT).dol: $(OUTPUT).elf
 
 gecko: rii
-	@echo "Creating gecko image..."
-	@[ -d ../gecko ] || mkdir -p ../gecko
-	@[ -d ../gecko/patch ] || mkdir -p ../gecko/patch
+	@echo "Creating gecko data..."
+	@[ -d ../patch ] || mkdir -p ../patch
 	
 	@# All of these commented lines are from when we used a .gpf AND a .gct
 	@# They have been left here for future reference
@@ -147,7 +146,7 @@ gecko: rii
 	
 	@mv $(OUTPUT).bin .
 	@../buildtools/createGPF
-	@cp wii-gc-adapter.gpf ../gecko/patch/RSBE01.gpf
+	@cp wii-gc-adapter.gpf ../patch/RSBE01.gpf
 	
 	@# (These too)
 	
@@ -160,13 +159,13 @@ gecko: rii
 	@echo "Done"
 
 rii: $(OUTPUT).bin
-	@echo "Creating riivolution image..."
-	@[ -d ../rii ] || mkdir -p ../rii
-	@[ -d ../rii/riivolution ] || mkdir -p ../rii/riivolution
+	@echo "Creating riivolution (debug) data..."
+	@[ -d ../dbg ] || mkdir -p ../dbg
+	@[ -d ../dbg/riivolution ] || mkdir -p ../dbg/riivolution
 	@../buildtools/createRiiXML.sh $(CODEADDRESS) $(BRANCHADDRESS)
-	@cp wii-gc-adapter.xml ../rii/riivolution
-	@cp $< ../rii/riivolution/wii-gc-adapter-inject.bin
-	@cp -r ../buildtools/apps ../rii
+	@cp wii-gc-adapter.xml ../dbg/riivolution
+	@cp $< ../dbg/riivolution/wii-gc-adapter-inject.bin
+	@cp -r ../buildtools/apps ../dbg
 	@echo "Done"
 
 $(OUTPUT).bin: $(OUTPUT).elf
