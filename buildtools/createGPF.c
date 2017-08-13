@@ -3,8 +3,16 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-int main()
+int main(int argc, char** argv)
 {
+    int verbose = 0;
+    if (argc > 1)
+    {
+        if (!strcmp(argv[1], "--verbose"))
+            verbose = 1;
+    }
+    if (!verbose) fclose(stderr);
+
     FILE* xml = fopen("wii-gc-adapter.xml", "r");
     
     if (!xml)

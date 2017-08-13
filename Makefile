@@ -135,18 +135,28 @@ gecko: rii
 	@echo "Creating gecko image..."
 	@[ -d ../gecko ] || mkdir -p ../gecko
 	@[ -d ../gecko/patch ] || mkdir -p ../gecko/patch
-	@[ -d ../gecko/codes ] || mkdir -p ../gecko/codes
-	@echo 0x01 | xxd -r -p > wii-gc-adapter.gpf
-	@echo $(CODEADDRESS) | xxd -r -p >> wii-gc-adapter.gpf
-	@echo $(shell printf "%08x\n" $(shell du -b $(OUTPUT).bin | cut -c1-4)) | xxd -r -p >> wii-gc-adapter.gpf
-	@cat ../wii-gc-adapter-inject.bin >> wii-gc-adapter.gpf
-	@cp wii-gc-adapter.gpf ../gecko/patch/RSBE01.gpf
-	@../buildtools/createGCT
-	@cp wii-gc-adapter.gct ../gecko/codes/RSBE01.gct
-	@echo "Wii U Gamecube adapter drop-in support [wilm0x42]" > ../wii-gc-adapter-gct.txt
-	@cat wii-gc-adapter-gct.txt >> ../wii-gc-adapter-gct.txt
-	@echo "E0000000 80008000" >> ../wii-gc-adapter-gct.txt
+	
+	@# All of these commented lines are from when we used a .gpf AND a .gct
+	@# They have been left here for future reference
+	
+	@#[ -d ../gecko/codes ] || mkdir -p ../gecko/codes
+	@#echo 0x01 | xxd -r -p > wii-gc-adapter.gpf
+	@#echo $(CODEADDRESS) | xxd -r -p >> wii-gc-adapter.gpf
+	@#echo $(shell printf "%08x\n" $(shell du -b $(OUTPUT).bin | cut -c1-4)) | xxd -r -p >> wii-gc-adapter.gpf
+	@#cat ../wii-gc-adapter-inject.bin >> wii-gc-adapter.gpf
+	
 	@mv $(OUTPUT).bin .
+	@../buildtools/createGPF
+	@cp wii-gc-adapter.gpf ../gecko/patch/RSBE01.gpf
+	
+	@# (These too)
+	
+	@#../buildtools/createGCT
+	@#cp wii-gc-adapter.gct ../gecko/codes/RSBE01.gct
+	@#echo "Wii U Gamecube adapter drop-in support [wilm0x42]" > ../wii-gc-adapter-gct.txt
+	@#cat wii-gc-adapter-gct.txt >> ../wii-gc-adapter-gct.txt
+	@#echo "E0000000 80008000" >> ../wii-gc-adapter-gct.txt
+	
 	@echo "Done"
 
 rii: $(OUTPUT).bin
