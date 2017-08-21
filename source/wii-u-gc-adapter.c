@@ -181,38 +181,9 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
    {
    	  unsigned char value = payload[j+3];
    	  
-   	  if (AXIS_OFFSET_VALUES[j] == ABS_X || AXIS_OFFSET_VALUES[j] == ABS_Y)
-   	  {
-   	  	if (value >= 20) value -= 20;
-   	  	if (value < 216)
-   	  	{
-   	  		value *= 1.1860;
-   	  	} else
-   	  	{
-   	  		value = 255;
-   	  	}
-   	  }
-   	  if (AXIS_OFFSET_VALUES[j] == ABS_RX || AXIS_OFFSET_VALUES[j] == ABS_RY)
-   	  {
-   	  	if (value >= 30) value -= 30;
-   	  	if (value < 196)
-   	  	{
-   	  		value *= 1.3076;
-   	  	} else
-   	  	{
-   	  		value = 255;
-   	  	}
-   	  }
    	  if (AXIS_OFFSET_VALUES[j] == ABS_Z || AXIS_OFFSET_VALUES[j] == ABS_RZ)
    	  {
-   	  	if (value >= 25) value -= 25;
-   	  	if (value < 200)
-   	  	{
-   	  		value *= 1.2750;
-   	  	} else
-   	  	{
-   	  		value = 255;
-   	  	}
+   	  	if (value >= 35)? value -= 35 : value = 0;
    	  }
    	  
       port->axis[j] = value;
@@ -316,7 +287,7 @@ static __attribute__((used)) u32 adapter_thread(int inputNum)
    if (a->rumbleChanged)
    {
       if (USB_WriteIntrMsgAsync(a->fd, USB_ENDPOINT_OUT, sizeof(a->rumble), a->rumble, dummyUsbCB, NULL) >= 0)
-      a->rumbleChanged = false;
+      	a->rumbleChanged = false;
    }
    
    return ret;
