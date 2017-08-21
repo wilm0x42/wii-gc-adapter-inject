@@ -183,7 +183,7 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
    	  
    	  if (AXIS_OFFSET_VALUES[j] == ABS_Z || AXIS_OFFSET_VALUES[j] == ABS_RZ)
    	  {
-   	  	if (value >= 35)? value -= 35 : value = 0;
+   	  	value = ((value >= 35)? (value - 35) : 0);
    	  }
    	  
       port->axis[j] = value;
