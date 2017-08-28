@@ -82,6 +82,9 @@ static struct adapter ata; //Adapter Thread Adapter
 volatile bool addedAdapter = false;
 
 
+void look_for_adapter();
+
+
 static unsigned char connected_type(unsigned char status)
 {
    unsigned char type = status & (STATE_NORMAL | STATE_WAVEBIRD);
@@ -267,7 +270,11 @@ static __attribute__((used)) u32 adapter_thread(int inputNum)
    u32 ret = inputNum + 208;
 
    if (!addedAdapter)
+   {
+   		//Hotplugging
+   		look_for_adapter();
    		return ret;
+   }
    
    struct adapter *a = &ata;
    
@@ -293,6 +300,12 @@ static __attribute__((used)) u32 adapter_thread(int inputNum)
    return ret;
 }
 
+
+static s32 adapter_removal_cb(s32 result, void *dummy)
+{
+	addedAdapter = false;
+	return 0;
+}
 
 static u32 add_adapter(usb_device_entry* dev)
 {
@@ -325,23 +338,18 @@ static u32 add_adapter(usb_device_entry* dev)
    if (usbret < 0)
 		return usbret;
    
+   //Add a callback that'll tell us when the adapter is removed
+   //                   26 == USBV0_IOCTL_DEVREMOVALHOOK
+   IOS_IoctlAsync(a->fd,26,NULL,0,NULL,0,adapter_removal_cb,NULL);
+   
    return 0;
 }
 
-void _start()
+void look_for_adapter()
 {
-   //Disable usb log
-   *enableUsbLog = 1;
-   
-   //Initialize heap
-   USB_Initialize();
-   
-   //Until we've found and successfully
-   //initialized the adapter
-   addedAdapter = false;
-   while (!addedAdapter)
-   {
-	    usb_device_entry devices[2];
+	if (!addedAdapter)
+	{
+		usb_device_entry devices[2];
 		u8 count = 0;
 		int i;
 		
@@ -356,5 +364,22 @@ void _start()
 					addedAdapter = true;
 			}
 		}
-   }
+	}
+}
+
+void _start()
+{
+   //Disable usb log
+   *enableUsbLog = 1;
+   
+   //Initialize heap
+   USB_Initialize();
+   
+   //Until we've found and successfully
+   //initialized the adapter
+   addedAdapter = false;
+   /*while (!addedAdapter)
+   {
+	    look_for_adapter();
+   }*/
 }
