@@ -216,7 +216,10 @@ static __attribute__((used)) u32 adapter_getStatus(u32 chan)
 	if (!ata.controllers[chan].connected)
 		return 0x08;//SI_ERROR_NO_RESPONSE
 	
-	return 0;
+	//The return value can really be anything without bit 0x08 set,
+	//but this is what's returned when using dolphin's internal
+	//gamecube adapter support.
+	return 0x00000020;
 }
 
 static __attribute__((used)) int adapter_getResponse(u32 chan, void* buf)
