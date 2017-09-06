@@ -7,7 +7,7 @@ Controller Adapter. Implementation is based on Gecko OS.
 (Riivolution, previously)
 
 All controller functionality, including rumble and hotplugging, is supported.
-(That is, hotplugging the controllers, **NOT** the gamecube adapter itself.)
+(That is, hotplugging of both controllers AND adapters! :D)
 There is, however, a known bug that involves the C stick not exactly behaving as expected;
 this will be investigated soon.
 
