@@ -26,6 +26,8 @@ echo "Overwrite PADRead's call to SI_IsChanBusy (80216098)"
 echo "with a call to adapter_isChanBusy ($adapter_isChanBusy_addr)."
 echo "Redirect PAD_ControlMotor (802162c4) to"
 echo "adapter_controlMotor ($adapter_controlMotor_addr)."
+echo "Overwrite PADUpdateOrigin's call to SI_GetType (8021556c)"
+echo "with a call to adapter_getType ($adapter_getType_addr)."
 
 #Branch to _start from within USB_LOG
 start_bl=$(../buildtools/generateBl 0x802288c4 $start_addr)
@@ -39,6 +41,7 @@ adapter_getStatus_bl=$(../buildtools/generateBl 0x802160c0 0x$adapter_getStatus_
 adapter_getResponse_bl=$(../buildtools/generateBl 0x802161b4 0x$adapter_getResponse_addr)
 adapter_isChanBusy_bl=$(../buildtools/generateBl 0x80216098 0x$adapter_isChanBusy_addr)
 adapter_controlMotor_bl=$(../buildtools/generateBl 0x802162c4 0x$adapter_controlMotor_addr)
+adapter_getType_bl2=$(../buildtools/generateBl 0x8021556c 0x$adapter_getType_addr)
 
 
 (cat > wii-gc-adapter.xml) << _EOF_
@@ -75,6 +78,9 @@ adapter_controlMotor_bl=$(../buildtools/generateBl 0x802162c4 0x$adapter_control
       <!-- Redirect PAD_ControlMotor to adapter_controlMotor -->
       <memory offset="0x802162c4" value="0x$adapter_controlMotor_bl" />
       <memory offset="0x802162c8" value="0x48000078" />
+      
+      <!-- Substitute PAD_UpdateOrigin's call to SI_GetType with adapter_getType -->
+      <memory offset="0x8021556c" value="0x$adapter_getType_bl2" />
 
       <!-- Make USB_LOG run -->
       <memory offset="0x80228874" value="0x2c000001" />

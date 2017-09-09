@@ -8,8 +8,6 @@ Controller Adapter. Implementation is based on Gecko OS.
 
 All controller functionality, including rumble and hotplugging, is supported.
 (That is, hotplugging of both controllers AND adapters! :D)
-There is, however, a known bug that involves the C stick not exactly behaving as expected;
-this will be investigated soon.
 
 Non-USA versions aren't _planned_, but you never know!
 

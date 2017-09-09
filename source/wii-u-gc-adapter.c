@@ -103,11 +103,13 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
 {
    unsigned char status = payload[0];
    unsigned char type = connected_type(status);
+   bool plugChanged = false;
 
    if (type != 0 && !port->connected)
    {
       port->type = type;
 	  port->connected = true;
+	  plugChanged = true;
    }
    else if (type == 0 && port->connected)
    {
@@ -177,6 +179,10 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
       	}
       }
    }
+   //The purpose of this bit is unknown. (So YACGD says)
+   //But, it seems to be set under normal circumstances,
+   //so we'll just set it for the sake of correctness.
+   outBtns |= 0x0080;
    
    port->buttons = outBtns;
 
@@ -190,6 +196,18 @@ static __attribute__((noinline)) void handle_payload(int i, struct ports *port, 
    	  }
    	  
       port->axis[j] = value;
+   }
+   
+   if (plugChanged)
+   {
+   		int off = (i*12)+2;
+   		int n;
+   		for (n = 0; n < 6; n++)
+   		{
+   			pad_origin[off + n] = port->axis[n];
+   		}
+   		*((uint16_t*)pad_origin) = port->buttons;
+   		PAD_UpdateOrigin(i);
    }
 }
 
@@ -378,11 +396,5 @@ void _start()
    //Initialize heap
    USB_Initialize();
    
-   //Until we've found and successfully
-   //initialized the adapter
    addedAdapter = false;
-   /*while (!addedAdapter)
-   {
-	    look_for_adapter();
-   }*/
 }
