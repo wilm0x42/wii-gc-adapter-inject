@@ -282,14 +282,9 @@ static s32 dummyUsbCB(s32 result, void* dummy)
 	return 0;
 }
 
-//This previously replaced SI_IsChanBusy
-//Now it replaces the instruction "addi r3, r3, 208"
-//So all return values should be (inputNum + 208), no exceptions.
-//(Pun intended)
-static __attribute__((used)) u32 adapter_thread(int inputNum)
+//Runs every frame at the beginning of PAD_Read
+static __attribute__((used)) u32 adapter_thread(int ret)
 {
-   u32 ret = inputNum + 208;
-
    if (!addedAdapter)
    {
    		//Hotplugging
@@ -302,7 +297,9 @@ static __attribute__((used)) u32 adapter_thread(int inputNum)
    unsigned char payload[37] ATTRIBUTE_ALIGN(32);
    int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
    if (usbret != 37 || payload[0] != 0x21)
+   {
 	  return ret;
+   }
   
    unsigned char *controller = &payload[1];
    

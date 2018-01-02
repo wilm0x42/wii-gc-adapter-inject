@@ -61,6 +61,9 @@ Simply put the `patch` folder on the SD card, just like normal, and launch the g
 with Gecko OS, just like normal, but with your mod(s) of choice installed as well.
 (Don't forget to enable "SD File Patcher" in Gecko OS)
 
+Unfortunately, the debug menu in Project M will not function with these hacks.
+This is because of the way Project M's debug codes get controller input; it's
+not feasible to support the full functionality of PM's debug tools.
 
 ## Thanks
 

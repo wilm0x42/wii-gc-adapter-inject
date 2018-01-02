@@ -148,3 +148,11 @@ So, after a little digging, I think that running adapter_thread at 800178b4,
 instead of the middle of PAD_Read, should help optimize latency. So... That's on the todo list.
 
 Latency's fixed. Oh, and yeah... Rumble support was surprisingly easy XD
+--Oh, and adapter hotplugging was also quite simple ;)
+
+After much scientific testing, I have finally determined that...
+Dolphin uses the gamecube adapter incorrectly! Specifically,
+they're getting incorrect inputs for the analogue triggers.
+Both trigger analogue values actually need to be -= 35,
+clamp to zero.
+I s'pooose I should fix that up when I have a chance ;P
