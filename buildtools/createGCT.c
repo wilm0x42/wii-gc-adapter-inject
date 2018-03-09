@@ -16,7 +16,7 @@ int main()
     
     if (!gct)
     {
-        printf("Error: Cannon open wii-gc-adapter.gct for writing\n");
+        printf("Error: Cannot open wii-gc-adapter.gct for writing\n");
         return 1;
     }
     
