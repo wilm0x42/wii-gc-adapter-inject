@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
 
@@ -53,6 +54,63 @@ int main()
                 fwrite(&outvalue, 4, 1, gct);
                 
                 fprintf(txt, "%08X %08X\n", ntohl(geckocode), value);
+            }
+            if (strstr(line, "valuefile=\""))
+            {
+            	char filenameIn[80];
+                sscanf(strstr(line, "valuefile=\""), "valuefile=\"%s\"", filenameIn);
+                
+                filenameIn[strlen(filenameIn)-1] = 0; // Remove trailing "
+                char* filename = filenameIn+1; // Add 1 to filename to avoid the leading /
+                
+                FILE* inFile = fopen(filename, "r");
+                if (!inFile)
+                {
+                	printf("Error: Could not open file %s\n", filename);
+                	continue;
+                }
+                
+                fseek(inFile, 0, SEEK_END);
+                int fsize = ftell(inFile);
+                fseek(inFile, 0, SEEK_SET);
+                
+                if (fsize % 4 != 0)
+                {
+                	printf("Error: size of file %s wasn't a multiple of 4\n", filename);
+                	fclose(inFile);
+                	continue;
+                }
+                
+                char* fileBuf = (char*)malloc(fsize);
+                if (!fileBuf)
+                {
+                	printf("Error: couldn't allocate memory for %s\n", filename);
+                	fclose(inFile);
+                }
+                
+                memset(fileBuf, 0, fsize);
+                fread(fileBuf, 1, fsize, inFile);
+                
+                unsigned int geckocode = offset;
+                unsigned int outsize = htonl(fsize);
+                
+                geckocode &= 0x01FFFFFF;
+                geckocode |= 0x06000000;
+                geckocode = htonl(geckocode);
+                
+                fwrite(&geckocode, 4, 1, gct);
+                fwrite(&outsize, 4, 1, gct);
+                fwrite(fileBuf, 1, fsize, gct);
+                
+                fprintf(txt, "%08X %08X\n", ntohl(geckocode), ntohl(outsize));
+                int n;
+                for (n = 0; n < fsize; n += 8)
+                {
+                	fprintf(txt, "%08X %08X\n", htonl(*(unsigned int*)(fileBuf+n)), htonl(*(unsigned int*)(fileBuf+n+4)));
+                }
+                
+                fclose(inFile);
+                free(fileBuf);
             }
         }
     }

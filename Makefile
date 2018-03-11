@@ -110,7 +110,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).s $(OUTPUT).bin dbg sd.raw patch
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).s $(OUTPUT).bin dbg sd.raw patch codes wii-gca-inject.txt
 
 #---------------------------------------------------------------------------------
 sd.raw:
@@ -134,28 +134,18 @@ DEPENDS	:=	$(OFILES:.o=.d)
 
 gecko: rii
 	@echo "Creating gecko data..."
+	
 	@[ -d ../patch ] || mkdir -p ../patch
-	
-	@# All of these commented lines are from when we used a .gpf AND a .gct
-	@# They have been left here for future reference
-	
-	@#[ -d ../gecko/codes ] || mkdir -p ../gecko/codes
-	@#echo 0x01 | xxd -r -p > wii-gc-adapter.gpf
-	@#echo $(CODEADDRESS) | xxd -r -p >> wii-gc-adapter.gpf
-	@#echo $(shell printf "%08x\n" $(shell du -b $(OUTPUT).bin | cut -c1-4)) | xxd -r -p >> wii-gc-adapter.gpf
-	@#cat ../wii-gc-adapter-inject.bin >> wii-gc-adapter.gpf
-	
 	@mv $(OUTPUT).bin .
 	@../buildtools/createGPF
 	@cp wii-gc-adapter.gpf ../patch/RSBE01.gpf
 	
-	@# (These too)
-	
-	@#../buildtools/createGCT
-	@#cp wii-gc-adapter.gct ../gecko/codes/RSBE01.gct
-	@#echo "Wii U Gamecube adapter drop-in support [wilm0x42]" > ../wii-gc-adapter-gct.txt
-	@#cat wii-gc-adapter-gct.txt >> ../wii-gc-adapter-gct.txt
-	@#echo "E0000000 80008000" >> ../wii-gc-adapter-gct.txt
+	@[ -d ../codes ] || mkdir -p ../codes
+	@../buildtools/createGCT
+	@cp wii-gc-adapter.gct ../codes/RSBE01.gct
+	@echo "Wii GCA Inject [wilm0x42]" > ../wii-gca-inject.txt
+	@cat wii-gc-adapter-gct.txt >> ../wii-gca-inject.txt
+	@echo "E0000000 80008000" >> ../wii-gca-inject.txt
 	
 	@echo "Done"
 

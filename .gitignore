@@ -2,9 +2,10 @@
 /build/
 /dbg/
 /patch/
+/codes/
 /*.elf
 /*.bin
-/wii-gc-adapter-gct.txt
+/wii-gca-inject.txt
 /buildtools/createGCT
 /buildtools/createGPF
 /buildtools/generateBl
