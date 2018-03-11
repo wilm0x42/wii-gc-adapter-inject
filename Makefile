@@ -140,12 +140,12 @@ gecko: rii
 	@../buildtools/createGPF
 	@cp wii-gc-adapter.gpf ../patch/RSBE01.gpf
 	
-	@[ -d ../codes ] || mkdir -p ../codes
-	@../buildtools/createGCT
-	@cp wii-gc-adapter.gct ../codes/RSBE01.gct
-	@echo "Wii GCA Inject [wilm0x42]" > ../wii-gca-inject.txt
-	@cat wii-gc-adapter-gct.txt >> ../wii-gca-inject.txt
-	@echo "E0000000 80008000" >> ../wii-gca-inject.txt
+	@#[ -d ../codes ] || mkdir -p ../codes
+	@#../buildtools/createGCT
+	@#cp wii-gc-adapter.gct ../codes/RSBE01.gct
+	@#echo "Wii GCA Inject [wilm0x42]" > ../wii-gca-inject.txt
+	@#cat wii-gc-adapter-gct.txt >> ../wii-gca-inject.txt
+	@#echo "E0000000 80008000" >> ../wii-gca-inject.txt
 	
 	@echo "Done"
 
