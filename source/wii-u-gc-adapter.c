@@ -80,7 +80,7 @@ struct adapter
 static struct adapter ata; //Adapter Thread Adapter
 
 volatile bool addedAdapter = false;
-
+volatile int initFrames = 0;
 
 void look_for_adapter();
 
@@ -285,6 +285,22 @@ static s32 dummyUsbCB(s32 result, void* dummy)
 //Runs every frame at the beginning of PAD_Read
 static __attribute__((used)) u32 adapter_thread(int ret)
 {
+   /* objcopy doesn't actually include .bss, which is normally full of zeros.
+      As such, the variables we put there are uninitialized. This isn't supposed to happen.
+      We can initialize everything ourselves, but we have to have some way to know
+      that we've already done this. We store this at the pointer initDone, which is
+      zero on boot. This variable controls whether or not USB_LOG should print, but we
+      don't care. I just knew it was a variable we could use. -Wilm */
+   if (*initDone == 0)
+   {
+   		USB_Initialize();
+   		
+   		addedAdapter = false;
+   		*initDone = 1;
+   		
+   		return ret;
+   }
+   
    if (!addedAdapter)
    {
    		//Hotplugging
@@ -293,14 +309,15 @@ static __attribute__((used)) u32 adapter_thread(int ret)
    }
    
    struct adapter *a = &ata;
-   
    unsigned char payload[37] ATTRIBUTE_ALIGN(32);
+
    int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
+   
    if (usbret != 37 || payload[0] != 0x21)
    {
 	  return ret;
    }
-  
+
    unsigned char *controller = &payload[1];
    
    int i;
@@ -385,13 +402,7 @@ void look_for_adapter()
 	}
 }
 
+//Just to make sure things compile correctly...
 void _start()
 {
-   //Disable usb log
-   *enableUsbLog = 1;
-   
-   //Initialize heap
-   USB_Initialize();
-   
-   addedAdapter = false;
 }

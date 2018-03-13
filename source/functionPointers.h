@@ -7,7 +7,8 @@
 #include <ogc/ipc.h>
 
 
-u8* enableUsbLog = (u8*)0x805A0CD8;
+u8* initDone = (u8*)0x805A0CD8;// Explained in wii-u-gamecube-adapter.c
+
 s32* origUsbHeapId = (s32*)0x8059ED80;
 u8* pad_origin = (u8*)0x804f6760;
 

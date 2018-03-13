@@ -89,8 +89,7 @@ distribution.
 #define USB_MAX_DEVICES                         32
 
 
-static s32 hIdBuf = -1;
-static s32* hId = &hIdBuf;//(s32*)0x8059ed80;
+static s32* hId = (s32*)0x8059ED80;
 static const char __oh0_path[] ATTRIBUTE_ALIGN(32) = "/dev/usb/oh0";
 //static const char __ven_path[] ATTRIBUTE_ALIGN(32) = "/dev/usb/ven";
 //static const char __hid_path[] ATTRIBUTE_ALIGN(32) = "/dev/usb/hid";
@@ -273,7 +272,7 @@ done:
 s32 USB_Initialize()
 {
 	//This is kind of a dirty hack, but oh well
-	if(*hId==-1) hId = origUsbHeapId;//iosCreateHeap(IPC_GetBufferLo(), USB_HEAPSIZE);
+	hId = origUsbHeapId;//iosCreateHeap(IPC_GetBufferLo(), USB_HEAPSIZE);
 	if(*hId<0) return IPC_ENOMEM;
 
 	/*if (ven_host==NULL) {

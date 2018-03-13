@@ -14,8 +14,6 @@ start_addr=$(powerpc-eabi-readelf -h ./wii-gc-adapter.g.elf | grep "Entry point 
 echo "Place code in memory at $codeaddress."
 echo "Overwrite Branch Address ($branchaddress) with"
 echo "code that will branch to adapter_thread ($adapter_thread_addr)"
-echo "Initially branch to code at $start_addr from"
-echo "0x802288c4 (USB_LOG), with one-time exec code."
 echo "Overwrite PADRead's call to SI_GetType (8021619c)"
 echo "with a call to adapter_getType ($adapter_getType_addr)."
 echo "Overwrite PADRead's call to SI_GetStatus (802160c0)"
@@ -29,8 +27,6 @@ echo "adapter_controlMotor ($adapter_controlMotor_addr)."
 echo "Overwrite PADUpdateOrigin's call to SI_GetType (8021556c)"
 echo "with a call to adapter_getType ($adapter_getType_addr)."
 
-#Branch to _start from within USB_LOG
-start_bl=$(../buildtools/generateBl 0x802288c4 $start_addr)
 
 #Branch to adapter_thread
 adapter_thread_bl=$(../buildtools/generateBl $branchaddress 0x$adapter_thread_addr)
@@ -81,16 +77,8 @@ adapter_getType_bl2=$(../buildtools/generateBl 0x8021556c 0x$adapter_getType_add
       
       <!-- Substitute PAD_UpdateOrigin's call to SI_GetType with adapter_getType -->
       <memory offset="0x8021556c" value="0x$adapter_getType_bl2" />
-
-      <!-- Make USB_LOG run -->
-      <memory offset="0x80228874" value="0x2c000001" />
-      <!-- Branch to _start from within USB_LOG -->
-      <memory offset="0x802288c4" value="0x$start_bl" />
-      <!-- nop early calls to USB_LOG (orig usb heap not initialized yet) -->
-      <memory offset="0x80228a00" value="0x60000000" />
-      <memory offset="0x802289c8" value="0x60000000" />
       
-      <!-- Spoof gamecube controller ports -->
+      <!-- Spoof gamecube controller ports (TODO: This probably isn't necesary anymore; I need to find out for sure) -->
       <memory offset="0x8021601c" value="0x41820078" />
    </patch>
 </wiidisc>
