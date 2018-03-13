@@ -140,7 +140,6 @@ gecko: rii
 	@../buildtools/createGPF
 	@cp wii-gc-adapter.gpf ../patch/RSBE01.gpf
 	
-	@[ -d ../codes ] || mkdir -p ../codes
 	@../buildtools/createGCT
 	@echo "Wii GCA Inject [wilm0x42]" > ../wii-gca-inject.txt
 	@echo "205A0CD8 00000000" >> ../wii-gca-inject.txt # Code means: If init isn't done
