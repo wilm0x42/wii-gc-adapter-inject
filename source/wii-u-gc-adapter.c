@@ -296,6 +296,7 @@ static __attribute__((used)) u32 adapter_thread(int ret)
    		USB_Initialize();
    		
    		addedAdapter = false;
+   		memset(&ata, 0, sizeof(ata));
    		*initDone = 1;
    		
    		return ret;
