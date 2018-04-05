@@ -7,7 +7,8 @@
 #include <ogc/ipc.h>
 
 
-u8* initDone = (u8*)0x805A0CD8;// Explained in wii-u-gamecube-adapter.c
+//u8* initDone = (u8*)0x805A0CD8;// Explained in wii-u-gamecube-adapter.c
+#define initDone (u8*)0x805A0CD8
 
 s32* origUsbHeapId = (s32*)0x8059ED80;
 u8* pad_origin = (u8*)0x804f6760;
@@ -36,7 +37,7 @@ void* (*IPC_GetBufferLo)() = (void*)0x80211ae8;
 s32 (*iosCreateHeap)(void* bufferLo, s32 size) = (void*)0x80213468;
 s32 (*IOS_Open)(const char *filepath,u32 mode) = (void*)0x802123a8;
 s32 (*IOS_Close)(s32 fd) = (void*)0x80212588;
-s32 (*IUSB_OpenDeviceIds)(char* device_id,u16 vid,u16 pid,s32 *fd) = (void*)0x80228c30;
+//s32 (*IUSB_OpenDeviceIds)(char* device_id,u16 vid,u16 pid,s32 *fd) = (void*)0x80228c30;
 void (*PAD_UpdateOrigin)(s32 chan) = (void*)0x802153f8;
 
 #endif

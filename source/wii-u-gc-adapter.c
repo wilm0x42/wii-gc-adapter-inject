@@ -83,6 +83,8 @@ volatile bool addedAdapter = false;
 
 void look_for_adapter();
 
+static __attribute__((used)) char thisMightBeHelpfulInTheGeckoCode[] = " Source: https://github.com/wilm0x42/wii-gc-adapter-inject ";
+
 
 static unsigned char connected_type(unsigned char status)
 {
@@ -292,11 +294,14 @@ static __attribute__((used)) u32 adapter_thread(int ret)
       don't care. I just knew it was a variable we could use. -Wilm */
    if (*initDone == 0)
    {
-   		USB_Initialize();
-   		
+   		ven_host = NULL;
    		addedAdapter = false;
-   		memset(&ata, 0, sizeof(ata));
-   		*initDone = 1;
+	   	memset(&ata, 0, sizeof(ata));
+	   		
+   		if (USB_Initialize() == 0)
+   		{
+	   		*initDone = 1;
+	   	}
    		
    		return ret;
    }
@@ -348,24 +353,8 @@ static u32 add_adapter(usb_device_entry* dev)
    memset(a, 0, sizeof(struct adapter));
    a->device = dev;
    a->rumble[0] = 0x11;
-   
-   //If we ever ditch IUSB_OpenDeviceIds again, here's the code for that:
-   /*
-	   char* devPath = (char*)iosAlloc(*hId, 32);
-	   char pathStr[] = "/dev/usb/oh0/57e/337";
-	   memset(devPath, 0, 32);
-	   int n;
-	   for (n = 0; n < sizeof(pathStr); n++)
-	   {
-	   		devPath[n] = pathStr[n];
-	   }
-	   a->fd = IOS_Open(devPath, 1|2);//Read | Write
-	   iosFree(*hId, devPath);
-   */
-   //a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
-   //if (a->fd < 0) return a->fd;
-   //if (IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd) < 0) return a->fd;
-   
+	
+   if (USB_OpenDevice(dev->device_id, 0x057e, 0x0337, &a->fd) < 0) return a->fd;
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    
@@ -374,8 +363,7 @@ static u32 add_adapter(usb_device_entry* dev)
 		return usbret;
    
    //Add a callback that'll tell us when the adapter is removed
-   //                   26 == USBV0_IOCTL_DEVREMOVALHOOK
-   IOS_IoctlAsync(a->fd,26,NULL,0,NULL,0,adapter_removal_cb,NULL);
+   USB_DeviceRemovalNotifyAsync(a->fd, adapter_removal_cb, NULL);
    
    return 0;
 }

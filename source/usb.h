@@ -202,7 +202,9 @@ s32 USB_DeviceRemovalNotifyAsync(s32 fd,usbcallback cb,void *userdata);
 s32 USB_DeviceChangeNotifyAsync(u8 interface_class,usbcallback cb,void *userdata);
 
 s32 USB_SuspendDevice(s32 fd);
+*/
 s32 USB_ResumeDevice(s32 fd);
+/*
 
 s32 USB_ReadIsoMsg(s32 fd,u8 bEndpoint,u8 bPackets,u16 *rpPacketSizes,void *rpData);
 s32 USB_ReadIsoMsgAsync(s32 fd,u8 bEndpoint,u8 bPackets,u16 *rpPacketSizes,void *rpData,usbcallback cb,void *userdata);*/
