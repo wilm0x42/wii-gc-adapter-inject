@@ -22,7 +22,8 @@ void* memset(void *__s, int __c, unsigned int num)
 }
 
 
-s32 (*IOS_Ioctlv)(s32 fd, s32 ioctl, s32 cnt_in, s32 cnt_io, ioctlv *argv) = (void*)0x80213090;//0x80212a40;
+s32 (*IOS_Ioctl)(s32 fd,s32 ioctl,void *buffer_in,s32 len_in,void *buffer_io,s32 len_io) = (void*)0x80212d40;
+s32 (*IOS_Ioctlv)(s32 fd, s32 ioctl, s32 cnt_in, s32 cnt_io, ioctlv *argv) = (void*)0x80213090;
 s32 (*IOS_IoctlvAsync)(s32 fd,s32 ioctl,s32 cnt_in,s32 cnt_io,ioctlv *argv,ipccallback ipc_cb,void *usrdata) = (void*)0x80212fac;
 s32 (*IOS_IoctlAsync)(s32 fd,s32 ioctl,void *buffer_in,s32 len_in,void *buffer_io,s32 len_io,ipccallback ipc_cb,void *usrdata) = (void*)0x80212c08;
 //argument 3 is likely the desired alignment boundary,

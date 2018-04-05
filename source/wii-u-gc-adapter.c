@@ -80,7 +80,6 @@ struct adapter
 static struct adapter ata; //Adapter Thread Adapter
 
 volatile bool addedAdapter = false;
-volatile int initFrames = 0;
 
 void look_for_adapter();
 
@@ -365,7 +364,7 @@ static u32 add_adapter(usb_device_entry* dev)
    */
    //a->fd = IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd);
    //if (a->fd < 0) return a->fd;
-   if (IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd) < 0) return a->fd;
+   //if (IUSB_OpenDeviceIds("oh0", 0x057e, 0x0337, &a->fd) < 0) return a->fd;
    
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
