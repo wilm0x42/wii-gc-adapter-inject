@@ -386,7 +386,7 @@ s32 USB_Initialize()
 		s32 ven_fd = IOS_Open(__ven_path, IPC_OPEN_NONE);
 		if (ven_fd >= 0)
 		{
-			ven_host = (struct _usbv5_host*)iosAlloc(*hId, sizeof(*ven_host));
+			ven_host = (struct _usbv5_host*)iosAlloc(*hId, sizeof(struct _usbv5_host /* *ven_host */));
 			if (ven_host == NULL)
 			{
 				IOS_Close(ven_fd);

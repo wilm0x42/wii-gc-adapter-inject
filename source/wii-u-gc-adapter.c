@@ -43,6 +43,9 @@ typedef s32 __s32;
 #include "usb.h"
 #include "usb.c.h"
 
+#define BUILD_DEBUG
+#include "debug.h"
+
 
 #define STATE_NORMAL   0x10
 #define STATE_WAVEBIRD 0x20
@@ -370,6 +373,8 @@ static u32 add_adapter(usb_device_entry* dev)
 
 void look_for_adapter()
 {
+	DEBUG_CHECKPOINT(1, 0);
+	
 	if (!addedAdapter)
 	{
 		usb_device_entry devices[2];
@@ -379,11 +384,16 @@ void look_for_adapter()
 		memset(devices, 0, sizeof(usb_device_entry) * 2);
    
 		USB_GetDeviceList(devices, 2, 0, &count);
+		DEBUG_CHECKPOINT(2, count);
 		for (i = 0; i < count; i++)
 		{
 			if (devices[i].vid == 0x057e && devices[i].pid == 0x0337 && !addedAdapter)
 			{
-				if(!add_adapter(&devices[i]))
+				int ret = add_adapter(&devices[i]);
+				
+				DEBUG_CHECKPOINT(3, ret);
+				
+				if (ret == 0)
 					addedAdapter = true;
 			}
 		}
