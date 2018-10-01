@@ -77,9 +77,6 @@ adapter_getType_bl2=$(../buildtools/generateBl 0x8021556c 0x$adapter_getType_add
       
       <!-- Substitute PAD_UpdateOrigin's call to SI_GetType with adapter_getType -->
       <memory offset="0x8021556c" value="0x$adapter_getType_bl2" />
-      
-      <!-- Spoof gamecube controller ports (TODO: This probably isn't necesary anymore; I need to find out for sure) -->
-      <memory offset="0x8021601c" value="0x41820078" />
    </patch>
 </wiidisc>
 _EOF_

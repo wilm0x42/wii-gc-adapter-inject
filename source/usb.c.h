@@ -47,7 +47,7 @@ distribution.
 #if defined(HW_RVL)
 
 #include "functionPointers.h"
-#include <ogc/ipc.h>
+//#include <ogc/ipc.h>
 //#include <ogc/machine/asm.h>
 //#include <ogc/machine/processor.h>//*/
 
@@ -477,7 +477,7 @@ s32 USB_OpenDevice(s32 device_id,u16 vid,u16 pid,s32 *fd)
 	//char *devicepath = NULL;
 	*fd = -1;
 
-	if (device_id && device_id != USB_OH1_DEVICE_ID)
+	if (ven_host != NULL/*device_id && device_id != USB_OH1_DEVICE_ID*/)
 	{
 		int i;
 

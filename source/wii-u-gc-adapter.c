@@ -37,14 +37,14 @@ typedef u64 __u64;
 typedef s16 __s16;
 typedef s32 __s32;
 
-
 #include "input.h"
 
 #include "usb.h"
-#include "usb.c.h"
 
 #define BUILD_DEBUG
 #include "debug.h"
+
+#include "usb.c.h"
 
 
 #define STATE_NORMAL   0x10
@@ -295,11 +295,18 @@ static __attribute__((used)) u32 adapter_thread(int ret)
       that we've already done this. We store this at the pointer initDone, which is
       zero on boot. This variable controls whether or not USB_LOG should print, but we
       don't care. I just knew it was a variable we could use. -Wilm */
+   
+   DEBUG_DISPLAY(permaValue, 16); // last seen returning -4 IPC_EINVAL   
+   
    if (*initDone == 0)
    {
    		ven_host = NULL;
    		addedAdapter = false;
 	   	memset(&ata, 0, sizeof(ata));
+	   	
+	   	#ifdef BUILD_DEBUG
+	   	debug_init();
+	   	#endif
 	   		
    		if (USB_Initialize() == 0)
    		{
@@ -320,7 +327,6 @@ static __attribute__((used)) u32 adapter_thread(int ret)
    unsigned char payload[37] ATTRIBUTE_ALIGN(32);
 
    int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
-   
    if (usbret != 37 || payload[0] != 0x21)
    {
 	  return ret;
@@ -356,14 +362,20 @@ static u32 add_adapter(usb_device_entry* dev)
    memset(a, 0, sizeof(struct adapter));
    a->device = dev;
    a->rumble[0] = 0x11;
+   
+   DEBUG_DISPLAY(1, 80);
 	
    if (USB_OpenDevice(dev->device_id, 0x057e, 0x0337, &a->fd) < 0) return a->fd;
+   
+   DEBUG_DISPLAY(2, 90);
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    
    int usbret = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
    if (usbret < 0)
 		return usbret;
+		
+	DEBUG_DISPLAY(3, 100);
    
    //Add a callback that'll tell us when the adapter is removed
    USB_DeviceRemovalNotifyAsync(a->fd, adapter_removal_cb, NULL);
@@ -392,6 +404,7 @@ void look_for_adapter()
 				int ret = add_adapter(&devices[i]);
 				
 				DEBUG_CHECKPOINT(3, ret);
+				permaValue = ret;
 				
 				if (ret == 0)
 					addedAdapter = true;

@@ -110,7 +110,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).s $(OUTPUT).bin dbg sd.raw patch codes wii-gca-inject.txt
+	@rm -fr $(BUILD) $(OUTPUT).elf $(OUTPUT).dol $(OUTPUT).s $(OUTPUT).bin dbg sd.raw patch codes wii-gca-inject.txt wii-gca-inject.gct
 
 #---------------------------------------------------------------------------------
 sd.raw:
@@ -145,6 +145,10 @@ gecko: rii
 	@echo "205A0CD8 00000000" >> ../wii-gca-inject.txt # Code means: If init isn't done
 	@cat wii-gc-adapter-gct.txt >> ../wii-gca-inject.txt
 	@echo -n "E0000000 80008000" >> ../wii-gca-inject.txt
+	
+	@../buildtools/gctbin
+	@cp wii-gca-inject.gct ..
+	@cp wii-gca-inject.gct ../dbg/codes/RSBE01.gct
 	
 	@echo "Done"
 

@@ -6,6 +6,7 @@
 /*.elf
 /*.bin
 /wii-gca-inject.txt
+/wii-gca-inject.gct
 /buildtools/createGCT
 /buildtools/createGPF
 /buildtools/generateBl
