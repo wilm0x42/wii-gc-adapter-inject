@@ -1,10 +1,11 @@
-# wii-gc-adapter
+# Wii-GCA-Inject
 
-Based off of wii-u-gc-adapter by ToadKing, wii-gc-adapter is a
+Based off of wii-u-gc-adapter by ToadKing, Wii-GCA-Inject (formerly known as wii-gc-adapter) is a
 mod for Super Smash Bros. Brawl that allows you to use
 gamecube controllers, via the official Nintendo Wii u Gamecube
-Controller Adapter. Implementation is based on Gecko OS.
-(Riivolution, previously)
+Controller Adapter. It's currently working using a .gpf file,
+compatible only with Gecko OS, but a standard gecko code version
+on the way, hopefully Coming Soon™.
 
 All controller functionality, including rumble and hotplugging, is supported.
 (That is, hotplugging of both controllers AND adapters! :D)
@@ -17,6 +18,33 @@ this to games besides SSBB with relative ease.
 
 For the bug tracker and whatnot, see
 [the github repo.](https://github.com/wilm0x42/wii-gc-adapter-inject)
+Also, there's a [thread on Smashboards.](https://smashboards.com/threads/wii-gca-inject-pm-on-wii-u-with-gamecube-adapter-beta.453431)
+
+## Current State of Development (June 2019)
+(Just gonna retrofit the wall of text from #5)
+
+So, I sorta hit a brick wall last year in debugging this stuff and ultimately
+got a bit too burnt out on it. (debugging stuff in a dormant hacking scene
+can take a lot out of you :P) However, I'm now returning to it, and starting
+to retrace my last steps.
+
+Where things left off, the overall functionality was pretty much finished,
+only needing final polish, except for the one big issue of not working
+with USB loaders. Turns out, USB loaders make the USB interface a LOT
+harder to work with in a hack like this, and supporting both USB loaders
+AND official disc makes things even harder. The main issue that halted
+everything was that the hack would be working fine on dolphin emulator
+in every way, but it would crash on console, with no good method of
+debugging, since I don't have a USB gecko :/ (In the unlikely chance that
+you're reading this and you have one that I can buy from you, PLEASE get in touch. ;)
+
+So yeah, sorry for the unannounced year-long hiatus :P
+
+Going forward, I'm hoping I can find some way to hook into the game, on console,
+while it's running, and poke around at the USB interface to see if I can coax
+the right functionality out of it. (Normally the easiest/best way to communicate with
+the wii from a computer, other than a USB gecko, would be the USB
+ports themselves. But alas, that's the very subject of this debugging. :facepalm:)
 
 ## Building and usage
 

@@ -296,7 +296,7 @@ static __attribute__((used)) u32 adapter_thread(int ret)
       zero on boot. This variable controls whether or not USB_LOG should print, but we
       don't care. I just knew it was a variable we could use. -Wilm */
    
-   DEBUG_DISPLAY(permaValue, 16); // last seen returning -4 IPC_EINVAL   
+   DEBUG_DISPLAY(16, permaValue); // last seen returning -4 IPC_EINVAL   
    
    if (*initDone == 0)
    {
