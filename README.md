@@ -21,7 +21,7 @@ For the bug tracker and whatnot, see
 Also, there's a [thread on Smashboards.](https://smashboards.com/threads/wii-gca-inject-pm-on-wii-u-with-gamecube-adapter-beta.453431)
 
 ## Current State of Development (June 2019)
-(Just gonna retrofit the wall of text from #5)
+(Just gonna retrofit the wall of text from #5 )
 
 So, I sorta hit a brick wall last year in debugging this stuff and ultimately
 got a bit too burnt out on it. (debugging stuff in a dormant hacking scene
