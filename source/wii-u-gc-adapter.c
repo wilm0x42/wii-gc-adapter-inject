@@ -302,7 +302,7 @@ static __attribute__((used)) u32 adapter_thread(int ret)
    
    if (*initDone == 0)
    {
-   		ven_host = NULL;
+   		hid_host = NULL;
    		addedAdapter = false;
 	   	memset(&ata, 0, sizeof(ata));
 	   	
@@ -406,7 +406,7 @@ void look_for_adapter()
 		
 		memset(devices, 0, sizeof(usb_device_entry) * 2);
    
-		USB_GetDeviceList(devices, 2, 0, &count);
+		DEBUG_DISPLAY(USB_GetDeviceList(devices, 2, 0, &count), 80);
 		DEBUG_CHECKPOINT(2, count);
 		for (i = 0; i < count; i++)
 		{

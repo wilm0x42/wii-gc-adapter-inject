@@ -162,3 +162,10 @@ I s'pooose I should fix that up when I have a chance ;P
 On IOS 251 (d2x base 58), opening /dev/usb/ven doesn't work (EINVAL), but /dev/usb/hid DOES work.
 My best guess is that cIOS is hogging /dev/usb/ven for ISO loading, but leaves /dev/usb/hid open nonetheless.
 Previous "New" USB implementation was talking to /dev/usb/ven, so I guess swapping will work just fine? (Lots of effort though :/)
+
+USB call chain backend-swap checklist:
+[*] USB_Deinitialize
+[*] USB_Initialize
+[*] USB_GetDeviceList
+[*] USB_OpenDevice
+[*] __usb_interrupt_bulk_message
