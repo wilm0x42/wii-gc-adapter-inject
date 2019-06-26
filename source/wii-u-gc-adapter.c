@@ -296,7 +296,9 @@ static __attribute__((used)) u32 adapter_thread(int ret)
       zero on boot. This variable controls whether or not USB_LOG should print, but we
       don't care. I just knew it was a variable we could use. -Wilm */
    
-   DEBUG_DISPLAY(16, permaValue); // last seen returning -4 IPC_EINVAL   
+   DEBUG_DISPLAY(permaValue, 16); // last seen returning -4 IPC_EINVAL
+   
+   DEBUG_DISPLAY(*initDone, 25);
    
    if (*initDone == 0)
    {
@@ -307,10 +309,15 @@ static __attribute__((used)) u32 adapter_thread(int ret)
 	   	#ifdef BUILD_DEBUG
 	   	debug_init();
 	   	#endif
-	   		
-   		if (USB_Initialize() == 0)
+	   	
+	   	int usbInit = USB_Initialize();
+   		if (usbInit == 0)
    		{
 	   		*initDone = 1;
+	   	}
+	   	else
+	   	{
+	   		//permaValue = usbInit;
 	   	}
    		
    		return ret;
@@ -368,12 +375,16 @@ static u32 add_adapter(usb_device_entry* dev)
    if (USB_OpenDevice(dev->device_id, 0x057e, 0x0337, &a->fd) < 0) return a->fd;
    
    DEBUG_DISPLAY(2, 90);
+   DEBUG_DISPLAY(a->fd, 34);
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    
    int usbret = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
    if (usbret < 0)
+   {
+   		DEBUG_DISPLAY(usbret, 43);
 		return usbret;
+   }
 		
 	DEBUG_DISPLAY(3, 100);
    

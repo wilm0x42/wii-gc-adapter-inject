@@ -384,8 +384,11 @@ s32 USB_Initialize()
 	if (ven_host == NULL)
 	{
 		s32 ven_fd = IOS_Open(__ven_path, IPC_OPEN_NONE);
+		
 		if (ven_fd >= 0)
 		{
+			permaValue = ven_fd;
+		
 			ven_host = (struct _usbv5_host*)iosAlloc(*hId, sizeof(struct _usbv5_host /* *ven_host */));
 			if (ven_host == NULL)
 			{
@@ -409,14 +412,19 @@ s32 USB_Initialize()
 
 			iosFree(*hId, ven_ver);*/
 		}
+		else return ven_fd;
 	}
 	
 	/*
-	if (hid_host==NULL) {
+	if (hid_host==NULL)
+	{
 		s32 hid_fd = IOS_Open(__hid_path, IPC_OPEN_NONE);
-		if (hid_fd>=0) {
+		
+		if (hid_fd>=0)
+		{
 			hid_host = (struct _usbv5_host*)iosAlloc(*hId, sizeof(*hid_host));
-			if (hid_host==NULL) {
+			if (hid_host==NULL)
+			{
 				IOS_Close(hid_fd);
 				goto mem_error;
 			}
@@ -427,12 +435,14 @@ s32 USB_Initialize()
 			if (hid_ver==NULL) goto mem_error;
 			// have to call the USB4 version first, to be safe
 			if (IOS_Ioctl(hid_fd, USBV4_IOCTL_GETVERSION, NULL, 0, NULL, 0)==0x40001  || \
-					IOS_Ioctl(hid_fd, USBV5_IOCTL_GETVERSION, NULL, 0, hid_ver, 0x20) || hid_ver[0]!=0x50001) {
+					IOS_Ioctl(hid_fd, USBV5_IOCTL_GETVERSION, NULL, 0, hid_ver, 0x20) || hid_ver[0]!=0x50001)
+			{
 				// wrong hid version
 				IOS_Close(hid_fd);
 				iosFree(*hId, hid_host);
 				hid_host = NULL;
-			} else
+			}
+			else
 				IOS_IoctlAsync(hid_fd, USBV5_IOCTL_GETDEVICECHANGE, NULL, 0, hid_host->attached_devices, 0x180, __usbv5_devicechangeCB, hid_host);
 
 			iosFree(*hId, hid_ver);
@@ -522,7 +532,7 @@ s32 USB_OpenDevice(s32 device_id,u16 vid,u16 pid,s32 *fd)
 	else
 		snprintf(devicepath,USB_MAXPATH,"/dev/usb/oh0/%x/%x",vid,pid);*/
 		
-	char devicepath[] = "/dev/usb/oh0/57e/337";
+	char devicepath[] = "/dev/usb/oh0/57e/337"; // important hack: yeah, we don't have snprintf :P
 
 	*fd = IOS_Open(devicepath, 0);
 	if(*fd < 0) ret = *fd;

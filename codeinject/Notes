@@ -156,3 +156,9 @@ they're getting incorrect inputs for the analogue triggers.
 Both trigger analogue values actually need to be -= 35,
 clamp to zero.
 I s'pooose I should fix that up when I have a chance ;P
+
+
+6/21/19 Time to bust out the old notes txt again!
+On IOS 251 (d2x base 58), opening /dev/usb/ven doesn't work (EINVAL), but /dev/usb/hid DOES work.
+My best guess is that cIOS is hogging /dev/usb/ven for ISO loading, but leaves /dev/usb/hid open nonetheless.
+Previous "New" USB implementation was talking to /dev/usb/ven, so I guess swapping will work just fine? (Lots of effort though :/)
