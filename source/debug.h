@@ -35,14 +35,11 @@ void debug_send(u32 which, u32 error)
     ((u32) (((u32)(v) & ((0x01 << (w)) - 1)) << (s)))
 #define _SHIFTR(v, s, w)	\
     ((u32)(((u32)(v) >> (s)) & ((0x01 << (w)) - 1)))
+    
 
-void debug_display(u32 val, int yoffset)
+
+void draw_number(u32 val, int xoff, int yoff)
 {
-	if (!debug_initDone)
-	{
-		return;
-	}
-
 	u8 r = 255;
 	u8 g = 255;
 	u8 b = 255;
@@ -53,10 +50,13 @@ void debug_display(u32 val, int yoffset)
 	u16 x = 0;
 	u16 y = 0;
 	u16 i = 0;
+	u16 bit = 0;
 
 	for (i = 0; i < 32; i++)
 	{
-		if (val & (1 << i))
+		bit = 31 - i;
+	
+		if (val & (1 << bit))
 		{
 			r = 255;
 			g = 0;
@@ -69,16 +69,34 @@ void debug_display(u32 val, int yoffset)
 			b = 0;
 		}
 		
-		for (x = (i*8) + 10; x < (i*8)+10 + 8; x++)
+		for (x = xoff + (bit*8); x < xoff + (bit*8) + 7; x++)
 		{
-			for (y = yoffset+10; y < yoffset+10 + 8; y++)
+			for (y = yoff; y < yoff + 7; y++)
 			{
+				if (x < 0 || y < 0 || x > 640 || y > 480)
+				{
+					continue;
+				}
+			
 				regval = 0xc8000000|(_SHIFTL(x,2,10));
 				regval = (regval&~0x3FF000)|(_SHIFTL(y,12,10));
 				*(u32*)regval = _SHIFTL(a,24,8)|_SHIFTL(r,16,8)|_SHIFTL(g,8,8)|(b&0xff);
 			}
 		}
 	}
+}
+
+void debug_display(u32 val, int index)
+{
+	if (!debug_initDone)
+	{
+		return;
+	}
+	
+	int yoffset = (index * 8) + 20;
+
+	draw_number(val, 20, yoffset);
+	draw_number(index, 300, yoffset);
 }
 
 void debug_init()

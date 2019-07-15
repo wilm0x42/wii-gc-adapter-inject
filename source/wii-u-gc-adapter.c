@@ -296,9 +296,9 @@ static __attribute__((used)) u32 adapter_thread(int ret)
       zero on boot. This variable controls whether or not USB_LOG should print, but we
       don't care. I just knew it was a variable we could use. -Wilm */
    
-   DEBUG_DISPLAY(permaValue, 16); // last seen returning -4 IPC_EINVAL
+   DEBUG_DISPLAY(permaValue, 0); // last seen returning -4 IPC_EINVAL
    
-   DEBUG_DISPLAY(*initDone, 25);
+   DEBUG_DISPLAY(*initDone, 1);
    
    if (*initDone == 0)
    {
@@ -317,7 +317,7 @@ static __attribute__((used)) u32 adapter_thread(int ret)
 	   	}
 	   	else
 	   	{
-	   		//permaValue = usbInit;
+	   		permaValue = usbInit;
 	   	}
    		
    		return ret;
@@ -330,12 +330,15 @@ static __attribute__((used)) u32 adapter_thread(int ret)
    		return ret;
    }
    
+   DEBUG_DISPLAY(0xAAAA, 8);
+   
    struct adapter *a = &ata;
    unsigned char payload[37] ATTRIBUTE_ALIGN(32);
 
    int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
    if (usbret != 37 || payload[0] != 0x21)
    {
+   	  DEBUG_DISPLAY(usbret, 9);
 	  return ret;
    }
 
@@ -370,23 +373,23 @@ static u32 add_adapter(usb_device_entry* dev)
    a->device = dev;
    a->rumble[0] = 0x11;
    
-   DEBUG_DISPLAY(1, 80);
+   DEBUG_DISPLAY(1, 3);
 	
    if (USB_OpenDevice(dev->device_id, 0x057e, 0x0337, &a->fd) < 0) return a->fd;
    
-   DEBUG_DISPLAY(2, 90);
-   DEBUG_DISPLAY(a->fd, 34);
+   DEBUG_DISPLAY(2, 4);
+   DEBUG_DISPLAY(a->fd, 5);
 
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    
    int usbret = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
    if (usbret < 0)
    {
-   		DEBUG_DISPLAY(usbret, 43);
+   		DEBUG_DISPLAY(usbret, 6);
 		return usbret;
    }
 		
-	DEBUG_DISPLAY(3, 100);
+	DEBUG_DISPLAY(3, 7);
    
    //Add a callback that'll tell us when the adapter is removed
    USB_DeviceRemovalNotifyAsync(a->fd, adapter_removal_cb, NULL);
@@ -396,7 +399,7 @@ static u32 add_adapter(usb_device_entry* dev)
 
 void look_for_adapter()
 {
-	DEBUG_CHECKPOINT(1, 0);
+	//DEBUG_CHECKPOINT(1, 0);
 	
 	if (!addedAdapter)
 	{
@@ -406,15 +409,15 @@ void look_for_adapter()
 		
 		memset(devices, 0, sizeof(usb_device_entry) * 2);
    
-		DEBUG_DISPLAY(USB_GetDeviceList(devices, 2, 0, &count), 80);
-		DEBUG_CHECKPOINT(2, count);
+		DEBUG_DISPLAY(USB_GetDeviceList(devices, 2, 0, &count), 2);
+		//DEBUG_CHECKPOINT(2, count);
 		for (i = 0; i < count; i++)
 		{
 			if (devices[i].vid == 0x057e && devices[i].pid == 0x0337 && !addedAdapter)
 			{
 				int ret = add_adapter(&devices[i]);
 				
-				DEBUG_CHECKPOINT(3, ret);
+				DEBUG_CHECKPOINT(8, 8);
 				permaValue = ret;
 				
 				if (ret == 0)
