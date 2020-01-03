@@ -336,9 +336,11 @@ static __attribute__((used)) u32 adapter_thread(int ret)
    unsigned char payload[37] ATTRIBUTE_ALIGN(32);
 
    int usbret = USB_ReadIntrMsg(a->fd, USB_ENDPOINT_IN, sizeof(payload), payload);
+   DEBUG_DISPLAY(usbret, 9);
+   DEBUG_DISPLAY((u32)*payload, 10);
    if (usbret != 37 || payload[0] != 0x21)
    {
-   	  DEBUG_DISPLAY(usbret, 9);
+   	  DEBUG_DISPLAY(0xDEADBEEF, 11);
 	  return ret;
    }
 
@@ -383,7 +385,7 @@ static u32 add_adapter(usb_device_entry* dev)
    unsigned char payload[1] ATTRIBUTE_ALIGN(32) = {0x13};
    
    int usbret = USB_WriteIntrMsg(a->fd, USB_ENDPOINT_OUT, sizeof(payload), payload);
-   if (usbret < 0)
+   if (usbret < 1)
    {
    		DEBUG_DISPLAY(usbret, 6);
 		return usbret;

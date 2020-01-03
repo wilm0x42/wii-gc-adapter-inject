@@ -169,3 +169,16 @@ USB call chain backend-swap checklist:
 [*] USB_GetDeviceList
 [*] USB_OpenDevice
 [*] __usb_interrupt_bulk_message
+
+
+7/19/19 Apparently, console is opening the device properly with HID, and even communicating to some degree.
+However, inputs don't yet _seem_ to be getting through, and it's crashing fairly quickly, leading me
+to suspect a possible memory leak.
+Also, dolphin isn't emulating the USB system well enough at all; for whatever reason, it's not informing
+my code about inserted devices _at all_. This makes debugging considerably harder. :/
+TODO: usb.c.h line 344: try commenting either side of that if statement, to see if we're really
+doing the supposed, "correct" behaviour that HIDv5 wants.
+
+8/02/19 Something was screwy about the way HID handles endpoints in interrupt transfers, but now it seems
+to be fine. The console seems to be able to connect to the adapter (more or less), but controller
+data doesn't seem to be getting sent to the console at all. Hmmmmmmmm

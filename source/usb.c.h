@@ -295,7 +295,8 @@ static inline s32 __usb_interrupt_bulk_message(s32 device_id,u8 ioctl,u8 bEndpoi
 	msg->cb = cb;
 	msg->userdata = userdata;
 
-	if (device_id >= 0 && device_id < 0x20)
+	//if (device_id >= 0 && device_id < 0x20)
+	if (!hid_host)
 	{
 		u8 *pEndP = NULL;
 		u16 *pLength = NULL;
@@ -332,7 +333,8 @@ done:
 	}
 	else
 	{
-		u8 endpoint_dir = !!(bEndpoint&USB_ENDPOINT_IN);
+		//u8 endpoint_dir = !!(bEndpoint&USB_ENDPOINT_IN);
+		u8 endpoint_dir = (bEndpoint == USB_ENDPOINT_IN) ? 1 : 0;
 		
 		//s32 fd = (device_id < 0) ? ven_host->fd : hid_host->fd;
 		s32 fd = hid_host->fd;
@@ -340,16 +342,18 @@ done:
 		//if (ioctl == USBV0_IOCTL_INTRMSG)
 		//{
 			// HID does this a little bit differently
-			if (device_id >= 0)
-			{
+			
+			//if (device_id >= 0)
+			//{
 				msg->hid_intr_dir = !endpoint_dir;
-			}
-			else
-			{
-				msg->intr.rpData = rpData;
-				msg->intr.wLength = wLength;
-				msg->intr.bEndpoint = bEndpoint;
-			}
+			//}
+			//else
+			//{
+			//	msg->intr.rpData = rpData;
+			//	msg->intr.wLength = wLength;
+			//	msg->intr.bEndpoint = bEndpoint;
+			//}
+			
 			ioctl = USBV5_IOCTL_INTRMSG;
 		/*}
 		else
@@ -366,9 +370,9 @@ done:
 		msg->vec[1].len = wLength;
 
 		if (cb == NULL)
-			ret = IOS_Ioctlv(fd, ioctl, 2-endpoint_dir, endpoint_dir, msg->vec);
+			ret = IOS_Ioctlv(fd, ioctl, 2/*-endpoint_dir*/, 1/*endpoint_dir*/, msg->vec);
 		else
-			return IOS_IoctlvAsync(fd, ioctl, 2-endpoint_dir, endpoint_dir, msg->vec, __usbv5_messageCB, msg);
+			return IOS_IoctlvAsync(fd, ioctl, 2/*-endpoint_dir*/, 1/*endpoint_dir*/, msg->vec, __usbv5_messageCB, msg);
 	}
 
 	if (msg != NULL) iosFree(*hId,msg);
@@ -449,7 +453,6 @@ s32 USB_Initialize()
 
 			//iosFree(*hId, hid_ver);
 		}
-		else return hid_fd; // TODO: This is _supposed_ to fail when we're launching from IOS36, so this return is just for debugging right now
 	}
 
 	return IPC_OK;
