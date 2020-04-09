@@ -392,7 +392,6 @@ s32 USB_Initialize()
 		
 		if (ven_fd >= 0)
 		{
-			permaValue = ven_fd;
 		
 			ven_host = (struct _usbv5_host*)iosAlloc(*hId, sizeof(struct _usbv5_host));
 			if (ven_host == NULL)
@@ -519,6 +518,9 @@ s32 USB_OpenDevice(s32 device_id,u16 vid,u16 pid,s32 *fd)
 				
 				u32* io_buffer = (u32*)iosAlloc(*hId, 0x20);
 				u8* buffer = (u8*)iosAlloc(*hId, 0x60);
+				
+				io_buffer[0] = device_id;
+				io_buffer[2] = 0;
 				
 				if (io_buffer && buffer)
 					IOS_Ioctl(hid_host->fd, USBV5_IOCTL_GETDEVPARAMS, io_buffer, 0x20, buffer, 0x60); // Return value does _kinda_ matter, but only if there's an error

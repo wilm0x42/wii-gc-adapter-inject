@@ -1,8 +1,6 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#ifdef BUILD_DEBUG
-
 #define DEBUG_CHECKPOINT(which,error) debug_send(which, error)
 #define DEBUG_DISPLAY(val, yoffset) debug_display(val, yoffset)
 
@@ -109,10 +107,5 @@ void debug_init()
 	
 	debug_initDone = true;
 }
-
-#else
-#define DEBUG_CHECKPOINT(which,error)
-#define DEBUG_DISPLAY(val, yoffset)
-#endif // BUILD_DEBUG
 
 #endif
