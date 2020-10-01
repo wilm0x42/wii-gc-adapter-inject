@@ -121,6 +121,13 @@ sd.raw:
 	@mcopy -s -i ./sd.raw ./dbg/* ./patch ::
 	@echo "Done"
 
+sdcopy:
+	@echo "Copying GCT onto SD card..."
+	mount $(SDPATH)
+	@cp ./wii-gca-inject.gct $(SDPATH)/codes/RSBE01.gct
+	umount $(SDPATH)
+	@echo "Done"
+
 #---------------------------------------------------------------------------------
 else
 
